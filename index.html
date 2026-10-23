@@ -160,7 +160,7 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 
 <section class="tools">
 <article class="tool"><div class="emoji">🎤</div><h3>Voice input</h3><p>Speak and turn your words into text using your browser's speech recognition, if supported.</p><button id="voiceTool">Start speaking</button></article>
-<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose an image from your device or open the camera, then scan its text. Browser-readable formats work best.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.crw,.nef,.nrw,.arw,.orf,.rw2,.pef,.srw,.raf,.3fr,.ari,.bay,.cap,.data,.dcs,.dcr,.drf,.eip,.erf,.fff,.gpr,.iiq,.k25,.kdc,.mdc,.mef,.mos,.mrw,.obm,.rwl,.rwz,.x3f,.tif,.tiff,.bmp,.dib,.gif,.svg,.jfif,.jpe,.jpg,.jpeg,.png,.apng,.webp,.ico,.icns,.psd,.xcf,.jp2,.j2k,.jpf,.jpx,.jpm,.mj2,.jxl,.tga,.pcx,.ppm,.pgm,.pbm,.pnm,.hdr,.exr,.emf,.wmf"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
+<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose an image from your device or open the camera, then scan its text. Browser-readable formats work best.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.nef,.arw,.orf,.rw2,.pef,.srw,.tif,.tiff,.bmp,.gif,.svg,.jfif,.jpe,.webp"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
 <article class="tool"><div class="emoji">🌐</div><h3>Browser translation</h3><p>Uses the built-in browser Translator API when available. Otherwise, online translation services are used as a fallback (internet required).</p><button id="check">Check browser support</button></article>
 </section>
 
@@ -177,6 +177,7 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 
 </div><!-- end translator workspace -->
 
+<div id="photoChoice" hidden style="position:fixed;inset:0;z-index:9999;background:#10142699;display:none;align-items:center;justify-content:center;padding:20px;" role="dialog" aria-modal="true" aria-label="Choose image source"><div style="width:min(100%,380px);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow);text-align:center"><h3 style="margin:0 0 8px">📷 Choose image source</h3><p style="color:var(--muted);margin:0 0 18px">Choose an image from your gallery or take a new photo.</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button id="chooseGallery" type="button">🖼️ Gallery / Files</button><button id="chooseCamera" type="button">📸 Take photo</button></div><button id="cancelPhotoChoice" class="mini" type="button" style="margin-top:12px">Cancel</button></div></div>
 <div id="cameraBox" class="camera-box" hidden><div class="camera-top"><b>Camera scanner</b><button id="closeCamera" class="mini">✕ Close</button></div><video id="cameraVideo" autoplay playsinline></video><canvas id="cameraCanvas" hidden></canvas><div class="camera-actions"><button id="capturePhoto" class="mini">📸 Capture photo</button><button id="scanCapture" class="mini" disabled>Scan captured photo</button></div><img id="capturedPreview" alt="Captured image preview" hidden></div>
 </main>
 <footer><div></div>Contact us:- Website: TranLang.ARnc Privacy / Support Email: subham99209114@gmail.com Contact no: 7544095688<div>© 2026 TranLang.ARnc. All rights reserved.</div></footer>
@@ -417,9 +418,8 @@ async function ensureTesseract(){
 async function scanImage(imageSource){
  const photoInput=$("photo");
  const file=(imageSource instanceof File)?imageSource:null;
- if(file && file.size>100*1024*1024){setStatus("This file is larger than 100 MB. Choose a smaller image for reliable browser scanning.");return;}
+ if(file && file.size>50*1024*1024){setStatus("This file is larger than 50 MB. Choose a smaller image for reliable browser scanning.");return;}
  if(file && file.size===0){setStatus("The selected file is empty or could not be read. Choose another image.");return;}
-  if(file && file.type && !file.type.startsWith("image/")){setStatus("This file is not identified as an image. Choose an image file (JPG, PNG, WebP, GIF, TIFF, HEIC, RAW, etc.).");return;}
  setStatus("Loading text scanner… first use requires internet.");
  try{
    await ensureTesseract();
@@ -478,8 +478,7 @@ async function scanImage(imageSource){
    if(!recognized)throw new Error("No readable text found. Choose the correct source language and try a clear, well-lit image with text in focus.");
    $("input").value=recognized;
    $("count").textContent=recognized.length.toLocaleString()+" characters";
-   setStatus("Text extracted from image. Starting translation…");
-    await translate();
+   setStatus("Text extracted from image. Review the recognized text and source language, then press Translate text.");
  }catch(err){
    setStatus("Image scan failed: "+(err.message||err)+" Make sure you are online and the selected source language matches the text in the image.");
  }finally{
@@ -487,7 +486,14 @@ async function scanImage(imageSource){
  }
 }
 $("photo").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(file)await scanImage(file);});
-$("quickPhoto").onclick=()=>{$("photo").click();};
+function showPhotoChoice(){const box=$("photoChoice");box.hidden=false;box.style.display="flex";}
+function hidePhotoChoice(){const box=$("photoChoice");box.hidden=true;box.style.display="none";}
+$("quickPhoto").onclick=showPhotoChoice;
+$("chooseGallery").onclick=()=>{hidePhotoChoice();$("photo").click();};
+$("chooseCamera").onclick=()=>{hidePhotoChoice();$("openCamera").click();};
+$("cancelPhotoChoice").onclick=hidePhotoChoice;
+$("photoChoice").addEventListener("click",e=>{if(e.target===$("photoChoice"))hidePhotoChoice();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")hidePhotoChoice();});
 let cameraStream=null,capturedBlob=null;
 $("openCamera").onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia){setStatus("Camera API unavailable. Open this page on HTTPS or localhost in a modern browser.");return;}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("cameraVideo").srcObject=cameraStream;$("cameraBox").hidden=false;$("capturedPreview").hidden=true;capturedBlob=null;$("scanCapture").disabled=true;setStatus("Camera is ready. Point it at the text and capture a photo.");}catch(err){setStatus("Cannot access camera: "+err.message+". Allow camera permission and use HTTPS or localhost.");}};
 function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}$("cameraVideo").srcObject=null;}
