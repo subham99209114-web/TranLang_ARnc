@@ -154,13 +154,13 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 <div class="lang-wrap"><label for="targetLang">TRANSLATE TO</label><select id="targetLang"><option value="en" selected>English</option><option value="hi">Hindi</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="bn">Bengali</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="ko">Korean</option></select></div>
 </div>
 <div class="panels">
-<div class="panel"><div class="panel-head"><span>✎ YOUR TEXT</span><span id="sourceName">Hindi</span></div><textarea id="input" placeholder="यहाँ वाक्य लिखें या बोलकर इनपुट दें…"></textarea><div class="panel-actions"><button class="mini" id="mic">🎙 Speak</button><button class="mini" id="clear">Cancel</button><div class="quick-tools" aria-label="Quick tools"><button class="mini" id="quickVoice" type="button" title="Voice input" aria-label="Voice input">🎤</button><button class="mini" id="quickPhoto" type="button" title="Choose photo and scan text" aria-label="Choose photo and scan text">📷</button><button class="mini" id="quickWeb" type="button" title="Check browser translation support" aria-label="Check browser translation support">🌐</button></div><span class="count" id="count">0 characters</span></div></div>
+<div class="panel"><div class="panel-head"><span>✎ YOUR TEXT</span><span id="sourceName">Hindi</span></div><textarea id="input" placeholder="यहाँ वाक्य लिखें या बोलकर इनपुट दें…"></textarea><div class="panel-actions"><button class="mini" id="mic">🎙 Speak</button><button class="mini" id="clear">Cancel</button><div class="quick-tools" aria-label="Quick tools"><button class="mini" id="quickVoice" type="button" title="Voice input" aria-label="Voice input">🎤</button><button class="mini" id="quickPhoto" type="button" title="Choose an image file or photo and scan text" aria-label="Choose an image file or photo and scan text">📷</button><button class="mini" id="quickWeb" type="button" title="Check browser translation support" aria-label="Check browser translation support">🌐</button></div><span class="count" id="count">0 characters</span></div></div>
 <div class="panel"><div class="panel-head"><span>✦ TRANSLATION</span><span id="targetName">English</span></div><div id="output" aria-live="polite">Your translation will appear here.</div><div class="panel-actions"><button class="mini" id="copy">▣ Copy</button><button class="mini" id="listen">🔊 Listen</button><button class="mini" id="useResult">↙ Use text</button></div></div>
 </div>
 
 <section class="tools">
 <article class="tool"><div class="emoji">🎤</div><h3>Voice input</h3><p>Speak and turn your words into text using your browser's speech recognition, if supported.</p><button id="voiceTool">Start speaking</button></article>
-<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Upload a photo or open your camera, capture text, and scan it with OCR.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*" capture="environment"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
+<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Upload a photo or open your camera, capture text, and scan it with OCR.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
 <article class="tool"><div class="emoji">🌐</div><h3>Browser translation</h3><p>Uses the built-in browser Translator API when available. Otherwise, online translation services are used as a fallback (internet required).</p><button id="check">Check browser support</button></article>
 </section>
 
@@ -258,52 +258,67 @@ function splitText(text,max){
     if(cut<1)cut=max;parts.push(remaining.slice(0,cut));remaining=remaining.slice(cut);
   }if(remaining)parts.push(remaining);return parts;
 }
-async function translate(){let text=$("input").value.trim(),from=$("sourceLang").value,to=$("targetLang").value;if(!text)return setStatus("Please enter or speak some text first.");if(from===to){$("output").textContent=text;saveHistory(text,text,from,to);return setStatus("Source and target languages are the same.");}
-setStatus("Checking whether your browser has a built-in translation engine…");
-try{
-if("Translator" in self && typeof Translator.create==="function"){
-let availability=await Translator.availability({sourceLanguage:from,targetLanguage:to});
-if(availability==="unavailable")throw new Error("This language pair is not available in the browser.");
-let translator=await Translator.create({sourceLanguage:from,targetLanguage:to,monitor(m){m.addEventListener("downloadprogress",e=>setStatus("Downloading language model: "+Math.round(e.loaded*100)+"%"))}});
-let result=await translator.translate(text);$("output").textContent=result;saveHistory(text,result,from,to);setStatus("Translated using your browser's built-in translation engine.");translator.destroy?.();return;
-}
-}catch(e){console.log("Built-in translator unavailable:",e.message)}
-let result=phraseTranslate(text,from,to);
-if(result!==null){$("output").textContent=result;saveHistory(text,result,from,to);setStatus("Translated from the built-in phrasebook.");return;}
-// Online fallback: try MyMemory first, then Google Translate's public web endpoint.
-try {
-  setStatus("Connecting to an online translation engine…");
-  const chunks=splitText(text,430), translated=[];
-  let engine="MyMemory";
-  for(let i=0;i<chunks.length;i++){
-    setStatus(`Translating part ${i+1} of ${chunks.length}…`);
-    let translatedText="";
-    try {
-      const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunks[i])}&langpair=${encodeURIComponent(from)}|${encodeURIComponent(to)}`;
-      const response=await fetch(url);
-      if(!response.ok) throw new Error("MyMemory HTTP "+response.status);
-      const data=await response.json();
-      if(data.responseStatus && Number(data.responseStatus)!==200) throw new Error(data.responseDetails||"MyMemory limit reached");
-      translatedText=decodeHtml(data.responseData?.translatedText||"");
-      if(!translatedText) throw new Error("MyMemory returned an empty result");
-    } catch(primaryError) {
-      const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(from)}&tl=${encodeURIComponent(to)}&dt=t&q=${encodeURIComponent(chunks[i])}`;
-      const response=await fetch(url);
-      if(!response.ok) throw new Error("Translation services unavailable (MyMemory and Google fallback).");
-      const data=await response.json();
-      translatedText=Array.isArray(data?.[0]) ? data[0].map(part=>part?.[0]||"").join("") : "";
-      if(!translatedText) throw new Error("No translation returned for this language pair.");
-      engine="Google fallback";
-    }
-    translated.push(translatedText);
-  }
-  $("output").textContent=translated.join("");
-  saveHistory(text,translated.join(""),from,to);
-  setStatus(`Translation complete using ${engine}. Check names, idioms, and important text for accuracy.`);
-}catch(err){
-  $("output").textContent="";
-  setStatus("Online translation is unavailable or a service limit was reached. Check your internet connection and try again. Details: "+err.message);
-}
+async function translate(){
+ let text=$("input").value.trim(),from=$("sourceLang").value,to=$("targetLang").value;
+ if(!text)return setStatus("Please enter, speak, or scan some text first.");
+ if(from===to){$("output").textContent=text;saveHistory(text,text,from,to);return setStatus("Source and target languages are the same.");}
+ $("translate").disabled=true;
+ const oldLabel=$("translate").textContent;$("translate").textContent="Translating…";
+ $("output").textContent="";
+ try{
+   setStatus("Checking browser translation support…");
+   if("Translator" in self && typeof Translator.create==="function"){
+     try{
+       const availability=await Translator.availability({sourceLanguage:from,targetLanguage:to});
+       if(availability!=="unavailable"){
+         const translator=await Translator.create({sourceLanguage:from,targetLanguage:to,
+           monitor(m){m.addEventListener("downloadprogress",e=>setStatus("Downloading language model: "+Math.round((e.loaded||0)*100)+"%"));}});
+         try{
+           const result=await translator.translate(text);
+           if(result && result.trim()){
+             $("output").textContent=result;saveHistory(text,result,from,to);
+             setStatus("Translated using your browser's built-in translation engine.");return;
+           }
+         }finally{translator.destroy?.();}
+       }
+     }catch(e){console.log("Built-in translation unavailable; trying online service:",e);}
+   }
+   const exact=phraseTranslate(text,from,to);
+   if(exact!==null){$("output").textContent=exact;saveHistory(text,exact,from,to);setStatus("Translated using the built-in phrasebook.");return;}
+   // Google Translate endpoint first for broader language-pair coverage; MyMemory is a fallback.
+   const chunks=splitText(text,380),translated=[];
+   let engine="Google translation service";
+   for(let i=0;i<chunks.length;i++){
+     setStatus(`Translating part ${i+1} of ${chunks.length}…`);
+     let translatedText="";
+     try{
+       const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(from)}&tl=${encodeURIComponent(to)}&dt=t&q=${encodeURIComponent(chunks[i])}`;
+       const response=await fetch(url);
+       if(!response.ok)throw new Error("Google service HTTP "+response.status);
+       const data=await response.json();
+       translatedText=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||"").join(""):"";
+       if(!translatedText.trim())throw new Error("Empty translation");
+     }catch(googleError){
+       const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunks[i])}&langpair=${encodeURIComponent(from)}|${encodeURIComponent(to)}`;
+       const response=await fetch(url);
+       if(!response.ok)throw new Error("Both online translation services are unavailable.");
+       const data=await response.json();
+       if(data.responseStatus && Number(data.responseStatus)!==200)throw new Error(data.responseDetails||"Translation service limit reached.");
+       translatedText=decodeHtml(data.responseData?.translatedText||"");
+       if(!translatedText.trim())throw new Error("No translation returned for this language pair.");
+       engine="MyMemory fallback";
+     }
+     translated.push(translatedText);
+   }
+   const finalResult=translated.join("");
+   $("output").textContent=finalResult;saveHistory(text,finalResult,from,to);
+   setStatus(`Translation complete using ${engine}. Please review names, idioms, and important text for accuracy.`);
+ }catch(err){
+   $("output").textContent="";
+   setStatus("Translation failed. Check your internet connection and confirm that the selected languages are supported. Details: "+(err.message||err));
+ }finally{
+   $("translate").disabled=false;$("translate").textContent=oldLabel;
+ }
 }
 $("translate").onclick=translate;
 let activeRecognition=null;
@@ -387,10 +402,64 @@ function finishSpeechUI(){
 }
 $("mic").onclick=startSpeech;$("voiceTool").onclick=startSpeech;$("quickVoice").onclick=startSpeech;
 $("listen").onclick=()=>{let t=$("output").textContent;if(!t||t==="Your translation will appear here.")return setStatus("There is no result to read aloud.");if(!("speechSynthesis"in window))return setStatus("Text-to-speech is not supported by this browser.");speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang=({hi:"hi-IN",en:"en-US",es:"es-ES",fr:"fr-FR",de:"de-DE",it:"it-IT",pt:"pt-PT",ru:"ru-RU",ar:"ar-SA",bn:"bn-BD",ta:"ta-IN",te:"te-IN",ja:"ja-JP",zh:"zh-CN",ko:"ko-KR"})[$("targetLang").value]||$("targetLang").value;speechSynthesis.speak(u);setStatus("Reading translation aloud.")};
-$("check").onclick=()=>setStatus(("Translator" in self&&typeof Translator.create==="function")?"This browser exposes the built-in Translator API. Availability still depends on language pair and browser setup.":"Built-in Translator API not detected. Use the phrasebook demo or add a translation engine for full translation.");$("quickWeb").onclick=$("check").onclick;
-async function ensureTesseract(){if(!window.Tesseract){await new Promise((resolve,reject)=>{let s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";s.onload=resolve;s.onerror=reject;document.head.appendChild(s)});}return window.Tesseract;}
-async function scanImage(imageSource){setStatus("Loading OCR engine… first use requires internet.");try{await ensureTesseract();const langMap={en:"eng",hi:"hin",es:"spa",fr:"fra",de:"deu",it:"ita",pt:"por",ru:"rus",ar:"ara",bn:"ben",ta:"tam",te:"tel",ja:"jpn",zh:"chi_sim",ko:"kor"};const lang=langMap[$("sourceLang").value]||"eng";setStatus("Recognizing text in photo…");const result=await Tesseract.recognize(imageSource,lang,{logger:m=>{if(m.status==="recognizing text")setStatus("Scanning photo: "+Math.round((m.progress||0)*100)+"%")}});const recognized=(result.data.text||"").trim();if(!recognized)throw new Error("No text found. Try a sharper, brighter photo.");$("input").value=recognized;$("count").textContent=recognized.length.toLocaleString()+" characters";setStatus("Photo scanned. Check the recognized text, then press Translate text.");}catch(err){setStatus("Photo scan failed: "+(err.message||err)+". Check internet and try a clear photo; selected OCR language must be supported by the library.");}}
-$("photo").addEventListener("change",async e=>{const file=e.target.files[0];if(file)await scanImage(file);e.target.value=""});$("quickPhoto").onclick=()=> $("photo").click();
+$("check").onclick=()=>setStatus(("Translator" in self&&typeof Translator.create==="function")?"This browser exposes the built-in Translator API. The app will use it when the selected language pair is available.":"Built-in Translator API not detected. Online translation requires internet; the app will try its online translation services.");$("quickWeb").onclick=$("check").onclick;
+async function ensureTesseract(){
+ if(!window.Tesseract){
+   await new Promise((resolve,reject)=>{
+     const script=document.createElement("script");
+     script.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+     script.onload=resolve;script.onerror=()=>reject(new Error("Could not load OCR library. Check internet access or CDN availability."));
+     document.head.appendChild(script);
+   });
+ }
+ return window.Tesseract;
+}
+async function scanImage(imageSource){
+ const photoInput=$("photo");
+ const file=(imageSource instanceof File)?imageSource:null;
+ if(file && file.size>20*1024*1024){setStatus("This image is larger than 20 MB. Choose a smaller image.");return;}
+ setStatus("Loading text scanner… first use requires internet.");
+ try{
+   await ensureTesseract();
+   const langMap={en:"eng",hi:"hin",es:"spa",fr:"fra",de:"deu",it:"ita",pt:"por",ru:"rus",ar:"ara",bn:"ben",ta:"tam",te:"tel",ja:"jpn",zh:"chi_sim",ko:"kor"};
+   const lang=langMap[$("sourceLang").value]||"eng";
+   setStatus("Preparing image for better text recognition…");
+   // Upscale small images and improve contrast for clearer OCR.
+   let ocrSource=imageSource;
+   try{
+     const bitmap=await createImageBitmap(imageSource);
+     const scale=Math.min(2.5,Math.max(1,1800/Math.max(bitmap.width,bitmap.height)));
+     const canvas=document.createElement("canvas");
+     canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
+     const ctx=canvas.getContext("2d",{willReadFrequently:true});
+     ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+     const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+     const d=imageData.data;
+     for(let i=0;i<d.length;i+=4){
+       const gray=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+       const contrast=Math.max(0,Math.min(255,(gray-128)*1.25+128));
+       d[i]=d[i+1]=d[i+2]=contrast;
+     }
+     ctx.putImageData(imageData,0,0);ocrSource=canvas;
+     bitmap.close?.();
+   }catch(prepError){console.log("Image enhancement skipped:",prepError);}
+   setStatus("Recognizing "+(names[$("sourceLang").value]||"selected-language")+" text in image…");
+   const result=await Tesseract.recognize(ocrSource,lang,{
+     logger:m=>{if(m.status==="recognizing text")setStatus("Scanning image: "+Math.round((m.progress||0)*100)+"%");}
+   });
+   const recognized=(result.data.text||"").replace(/[ \t]+\n/g,"\n").trim();
+   if(!recognized)throw new Error("No readable text found. Choose the correct source language and try a clear, well-lit image with text in focus.");
+   $("input").value=recognized;
+   $("count").textContent=recognized.length.toLocaleString()+" characters";
+   setStatus("Text extracted from image. Review the recognized text and source language, then press Translate text.");
+ }catch(err){
+   setStatus("Image scan failed: "+(err.message||err)+" Make sure you are online and the selected source language matches the text in the image.");
+ }finally{
+   if(photoInput)photoInput.value="";
+ }
+}
+$("photo").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(file)await scanImage(file);});
+$("quickPhoto").onclick=()=>{$("photo").click();};
 let cameraStream=null,capturedBlob=null;
 $("openCamera").onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia){setStatus("Camera API unavailable. Open this page on HTTPS or localhost in a modern browser.");return;}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("cameraVideo").srcObject=cameraStream;$("cameraBox").hidden=false;$("capturedPreview").hidden=true;capturedBlob=null;$("scanCapture").disabled=true;setStatus("Camera is ready. Point it at the text and capture a photo.");}catch(err){setStatus("Cannot access camera: "+err.message+". Allow camera permission and use HTTPS or localhost.");}};
 function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}$("cameraVideo").srcObject=null;}
