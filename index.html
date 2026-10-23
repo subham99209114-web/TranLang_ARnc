@@ -160,7 +160,7 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 
 <section class="tools">
 <article class="tool"><div class="emoji">🎤</div><h3>Voice input</h3><p>Speak and turn your words into text using your browser's speech recognition, if supported.</p><button id="voiceTool">Start speaking</button></article>
-<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose an image from your device or open the camera, then scan its text. Browser-readable formats work best.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.nef,.arw,.orf,.rw2,.pef,.srw,.tif,.tiff,.bmp,.gif,.svg,.jfif,.jpe,.webp"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
+<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose an image from your device or open the camera, then scan its text. HEIC/HEIF and TIFF are converted when possible; some RAW/proprietary formats need JPG/PNG conversion.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.nef,.arw,.orf,.rw2,.pef,.srw,.tif,.tiff,.bmp,.gif,.svg,.jfif,.jpe,.webp,.jp2,.j2k,.jpf,.jpx,.psd,.xcf,.jxl,.apng,.dib,.tga,.dds"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
 <article class="tool"><div class="emoji">🌐</div><h3>Browser translation</h3><p>Uses the built-in browser Translator API when available. Otherwise, online translation services are used as a fallback (internet required).</p><button id="check">Check browser support</button></article>
 </section>
 
@@ -177,7 +177,6 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 
 </div><!-- end translator workspace -->
 
-<div id="photoChoice" hidden style="position:fixed;inset:0;z-index:9999;background:#10142699;display:none;align-items:center;justify-content:center;padding:20px;" role="dialog" aria-modal="true" aria-label="Choose image source"><div style="width:min(100%,380px);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow);text-align:center"><h3 style="margin:0 0 8px">📷 Choose image source</h3><p style="color:var(--muted);margin:0 0 18px">Choose an image from your gallery or take a new photo.</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button id="chooseGallery" type="button">🖼️ Gallery / Files</button><button id="chooseCamera" type="button">📸 Take photo</button></div><button id="cancelPhotoChoice" class="mini" type="button" style="margin-top:12px">Cancel</button></div></div>
 <div id="cameraBox" class="camera-box" hidden><div class="camera-top"><b>Camera scanner</b><button id="closeCamera" class="mini">✕ Close</button></div><video id="cameraVideo" autoplay playsinline></video><canvas id="cameraCanvas" hidden></canvas><div class="camera-actions"><button id="capturePhoto" class="mini">📸 Capture photo</button><button id="scanCapture" class="mini" disabled>Scan captured photo</button></div><img id="capturedPreview" alt="Captured image preview" hidden></div>
 </main>
 <footer><div></div>Contact us:- Website: TranLang.ARnc Privacy / Support Email: subham99209114@gmail.com Contact no: 7544095688<div>© 2026 TranLang.ARnc. All rights reserved.</div></footer>
@@ -415,6 +414,35 @@ async function ensureTesseract(){
  }
  return window.Tesseract;
 }
+async function loadImageLibrary(src, globalName){
+ if(window[globalName]) return;
+ await new Promise((resolve,reject)=>{
+  const existing=[...document.scripts].find(x=>x.src===src);
+  if(existing){existing.addEventListener("load",resolve,{once:true});existing.addEventListener("error",()=>reject(new Error("Could not load image format support. Check internet and retry.")),{once:true});return;}
+  const script=document.createElement("script");script.src=src;script.onload=resolve;script.onerror=()=>reject(new Error("Could not load image format support. Check internet and retry."));document.head.appendChild(script);
+ });
+}
+async function normalizeImageSource(source){
+ const file=source instanceof File?source:null;
+ const name=(file?.name||"").toLowerCase();
+ const type=(file?.type||"").toLowerCase();
+ if(/\.(heic|heif)$/.test(name)||/image\/(heic|heif)/.test(type)){
+  await loadImageLibrary("https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js","heic2any");
+  const converted=await window.heic2any({blob:source,toType:"image/jpeg",quality:0.92});
+  return Array.isArray(converted)?converted[0]:converted;
+ }
+ if(/\.(tif|tiff)$/.test(name)||/image\/tiff/.test(type)){
+  await loadImageLibrary("https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js","UTIF");
+  const buffer=await source.arrayBuffer(), pages=window.UTIF.decode(buffer);
+  if(!pages?.length) throw new Error("TIFF could not be decoded. Convert it to JPG or PNG and retry.");
+  window.UTIF.decodeImage(buffer,pages[0]);
+  const rgba=window.UTIF.toRGBA8(pages[0]), canvas=document.createElement("canvas");
+  canvas.width=pages[0].width;canvas.height=pages[0].height;
+  canvas.getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(rgba),canvas.width,canvas.height),0,0);
+  return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("TIFF conversion failed.")),"image/png"));
+ }
+ return source;
+}
 async function scanImage(imageSource){
  const photoInput=$("photo");
  const file=(imageSource instanceof File)?imageSource:null;
@@ -422,6 +450,8 @@ async function scanImage(imageSource){
  if(file && file.size===0){setStatus("The selected file is empty or could not be read. Choose another image.");return;}
  setStatus("Loading text scanner… first use requires internet.");
  try{
+   setStatus("Checking image format…");
+   imageSource=await normalizeImageSource(imageSource);
    await ensureTesseract();
    const langMap={en:"eng",hi:"hin",es:"spa",fr:"fra",de:"deu",it:"ita",pt:"por",ru:"rus",ar:"ara",bn:"ben",ta:"tam",te:"tel",ja:"jpn",zh:"chi_sim",ko:"kor"};
    const lang=langMap[$("sourceLang").value]||"eng";
@@ -438,7 +468,7 @@ async function scanImage(imageSource){
            bitmap=await new Promise((resolve,reject)=>{
              const img=new Image();
              img.onload=()=>resolve(img);
-             img.onerror=()=>reject(new Error("This browser cannot decode this image format. Try JPG or PNG, or convert this image first."));
+             img.onerror=()=>reject(new Error("This browser cannot decode this image format. HEIC/HEIF and TIFF are handled by converters; for RAW, PSD, JPEG 2000 or other special formats, convert to JPG/PNG first."));
              img.src=objectUrl;
            });
          }finally{URL.revokeObjectURL(objectUrl);}
@@ -465,9 +495,6 @@ async function scanImage(imageSource){
      bitmap.close?.();
    }catch(prepError){
      console.log("Image preparation failed:",prepError);
-     if(imageSource instanceof File && !imageSource.type.startsWith("image/")){
-       throw new Error("This file extension is allowed in the picker, but your browser cannot decode it for text scanning. RAW/DNG/CR2/NEF and some HEIC files need conversion to JPG or PNG first.");
-     }
      throw prepError;
    }
    setStatus("Recognizing "+(names[$("sourceLang").value]||"selected-language")+" text in image…");
@@ -486,14 +513,7 @@ async function scanImage(imageSource){
  }
 }
 $("photo").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(file)await scanImage(file);});
-function showPhotoChoice(){const box=$("photoChoice");box.hidden=false;box.style.display="flex";}
-function hidePhotoChoice(){const box=$("photoChoice");box.hidden=true;box.style.display="none";}
-$("quickPhoto").onclick=showPhotoChoice;
-$("chooseGallery").onclick=()=>{hidePhotoChoice();$("photo").click();};
-$("chooseCamera").onclick=()=>{hidePhotoChoice();$("openCamera").click();};
-$("cancelPhotoChoice").onclick=hidePhotoChoice;
-$("photoChoice").addEventListener("click",e=>{if(e.target===$("photoChoice"))hidePhotoChoice();});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")hidePhotoChoice();});
+$("quickPhoto").onclick=()=>{$("photo").click();};
 let cameraStream=null,capturedBlob=null;
 $("openCamera").onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia){setStatus("Camera API unavailable. Open this page on HTTPS or localhost in a modern browser.");return;}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("cameraVideo").srcObject=cameraStream;$("cameraBox").hidden=false;$("capturedPreview").hidden=true;capturedBlob=null;$("scanCapture").disabled=true;setStatus("Camera is ready. Point it at the text and capture a photo.");}catch(err){setStatus("Cannot access camera: "+err.message+". Allow camera permission and use HTTPS or localhost.");}};
 function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}$("cameraVideo").srcObject=null;}
