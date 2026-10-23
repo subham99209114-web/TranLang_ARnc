@@ -160,7 +160,7 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 
 <section class="tools">
 <article class="tool"><div class="emoji">🎤</div><h3>Voice input</h3><p>Speak and turn your words into text using your browser's speech recognition, if supported.</p><button id="voiceTool">Start speaking</button></article>
-<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose an image from your device or open the camera, then scan its text. Browser-readable formats work best.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.nef,.arw,.orf,.rw2,.pef,.srw,.tif,.tiff,.bmp,.gif,.svg,.jfif,.jpe,.webp"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
+<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose an image from your device or open the camera, then scan its text. Browser-readable formats work best.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.crw,.nef,.nrw,.arw,.orf,.rw2,.pef,.srw,.raf,.3fr,.ari,.bay,.cap,.data,.dcs,.dcr,.drf,.eip,.erf,.fff,.gpr,.iiq,.k25,.kdc,.mdc,.mef,.mos,.mrw,.obm,.rwl,.rwz,.x3f,.tif,.tiff,.bmp,.dib,.gif,.svg,.jfif,.jpe,.jpg,.jpeg,.png,.apng,.webp,.ico,.icns,.psd,.xcf,.jp2,.j2k,.jpf,.jpx,.jpm,.mj2,.jxl,.tga,.pcx,.ppm,.pgm,.pbm,.pnm,.hdr,.exr,.emf,.wmf"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
 <article class="tool"><div class="emoji">🌐</div><h3>Browser translation</h3><p>Uses the built-in browser Translator API when available. Otherwise, online translation services are used as a fallback (internet required).</p><button id="check">Check browser support</button></article>
 </section>
 
@@ -417,8 +417,9 @@ async function ensureTesseract(){
 async function scanImage(imageSource){
  const photoInput=$("photo");
  const file=(imageSource instanceof File)?imageSource:null;
- if(file && file.size>50*1024*1024){setStatus("This file is larger than 50 MB. Choose a smaller image for reliable browser scanning.");return;}
+ if(file && file.size>100*1024*1024){setStatus("This file is larger than 100 MB. Choose a smaller image for reliable browser scanning.");return;}
  if(file && file.size===0){setStatus("The selected file is empty or could not be read. Choose another image.");return;}
+  if(file && file.type && !file.type.startsWith("image/")){setStatus("This file is not identified as an image. Choose an image file (JPG, PNG, WebP, GIF, TIFF, HEIC, RAW, etc.).");return;}
  setStatus("Loading text scanner… first use requires internet.");
  try{
    await ensureTesseract();
@@ -477,7 +478,8 @@ async function scanImage(imageSource){
    if(!recognized)throw new Error("No readable text found. Choose the correct source language and try a clear, well-lit image with text in focus.");
    $("input").value=recognized;
    $("count").textContent=recognized.length.toLocaleString()+" characters";
-   setStatus("Text extracted from image. Review the recognized text and source language, then press Translate text.");
+   setStatus("Text extracted from image. Starting translation…");
+    await translate();
  }catch(err){
    setStatus("Image scan failed: "+(err.message||err)+" Make sure you are online and the selected source language matches the text in the image.");
  }finally{
