@@ -177,7 +177,6 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 
 </div><!-- end translator workspace -->
 
-<div id="photoChoice" hidden style="position:fixed;inset:0;z-index:9999;background:#10142699;display:none;align-items:center;justify-content:center;padding:20px;" role="dialog" aria-modal="true" aria-label="Choose image source"><div style="width:min(100%,380px);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow);text-align:center"><h3 style="margin:0 0 8px">📷 Choose image source</h3><p style="color:var(--muted);margin:0 0 18px">Choose an image from your gallery or take a new photo.</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button id="chooseGallery" type="button">🖼️ Gallery / Files</button><button id="chooseCamera" type="button">📸 Take photo</button></div><button id="cancelPhotoChoice" class="mini" type="button" style="margin-top:12px">Cancel</button></div></div>
 <div id="cameraBox" class="camera-box" hidden><div class="camera-top"><b>Camera scanner</b><button id="closeCamera" class="mini">✕ Close</button></div><video id="cameraVideo" autoplay playsinline></video><canvas id="cameraCanvas" hidden></canvas><div class="camera-actions"><button id="capturePhoto" class="mini">📸 Capture photo</button><button id="scanCapture" class="mini" disabled>Scan captured photo</button></div><img id="capturedPreview" alt="Captured image preview" hidden></div>
 </main>
 <footer><div></div>Contact us:- Website: TranLang.ARnc Privacy / Support Email: subham99209114@gmail.com Contact no: 7544095688<div>© 2026 TranLang.ARnc. All rights reserved.</div></footer>
@@ -486,14 +485,7 @@ async function scanImage(imageSource){
  }
 }
 $("photo").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(file)await scanImage(file);});
-function showPhotoChoice(){const box=$("photoChoice");box.hidden=false;box.style.display="flex";}
-function hidePhotoChoice(){const box=$("photoChoice");box.hidden=true;box.style.display="none";}
-$("quickPhoto").onclick=showPhotoChoice;
-$("chooseGallery").onclick=()=>{hidePhotoChoice();$("photo").click();};
-$("chooseCamera").onclick=()=>{hidePhotoChoice();$("openCamera").click();};
-$("cancelPhotoChoice").onclick=hidePhotoChoice;
-$("photoChoice").addEventListener("click",e=>{if(e.target===$("photoChoice"))hidePhotoChoice();});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")hidePhotoChoice();});
+$("quickPhoto").onclick=()=>{$("photo").click();};
 let cameraStream=null,capturedBlob=null;
 $("openCamera").onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia){setStatus("Camera API unavailable. Open this page on HTTPS or localhost in a modern browser.");return;}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("cameraVideo").srcObject=cameraStream;$("cameraBox").hidden=false;$("capturedPreview").hidden=true;capturedBlob=null;$("scanCapture").disabled=true;setStatus("Camera is ready. Point it at the text and capture a photo.");}catch(err){setStatus("Cannot access camera: "+err.message+". Allow camera permission and use HTTPS or localhost.");}};
 function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}$("cameraVideo").srcObject=null;}
