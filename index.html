@@ -160,7 +160,7 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 
 <section class="tools">
 <article class="tool"><div class="emoji">🎤</div><h3>Voice input</h3><p>Speak and turn your words into text using your browser's speech recognition, if supported.</p><button id="voiceTool">Start speaking</button></article>
-<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Upload a photo or open your camera, capture text, and scan it with OCR.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
+<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose an image from your device or open the camera, then scan its text. Browser-readable formats work best.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.nef,.arw,.orf,.rw2,.pef,.srw,.tif,.tiff,.bmp,.gif,.svg,.jfif,.jpe,.webp"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
 <article class="tool"><div class="emoji">🌐</div><h3>Browser translation</h3><p>Uses the built-in browser Translator API when available. Otherwise, online translation services are used as a fallback (internet required).</p><button id="check">Check browser support</button></article>
 </section>
 
@@ -177,6 +177,7 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 
 </div><!-- end translator workspace -->
 
+<div id="photoChoice" hidden style="position:fixed;inset:0;z-index:9999;background:#10142699;display:none;align-items:center;justify-content:center;padding:20px;" role="dialog" aria-modal="true" aria-label="Choose image source"><div style="width:min(100%,380px);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow);text-align:center"><h3 style="margin:0 0 8px">📷 Choose image source</h3><p style="color:var(--muted);margin:0 0 18px">Choose an image from your gallery or take a new photo.</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button id="chooseGallery" type="button">🖼️ Gallery / Files</button><button id="chooseCamera" type="button">📸 Take photo</button></div><button id="cancelPhotoChoice" class="mini" type="button" style="margin-top:12px">Cancel</button></div></div>
 <div id="cameraBox" class="camera-box" hidden><div class="camera-top"><b>Camera scanner</b><button id="closeCamera" class="mini">✕ Close</button></div><video id="cameraVideo" autoplay playsinline></video><canvas id="cameraCanvas" hidden></canvas><div class="camera-actions"><button id="capturePhoto" class="mini">📸 Capture photo</button><button id="scanCapture" class="mini" disabled>Scan captured photo</button></div><img id="capturedPreview" alt="Captured image preview" hidden></div>
 </main>
 <footer><div></div>Contact us:- Website: TranLang.ARnc Privacy / Support Email: subham99209114@gmail.com Contact no: 7544095688<div>© 2026 TranLang.ARnc. All rights reserved.</div></footer>
@@ -417,7 +418,8 @@ async function ensureTesseract(){
 async function scanImage(imageSource){
  const photoInput=$("photo");
  const file=(imageSource instanceof File)?imageSource:null;
- if(file && file.size>20*1024*1024){setStatus("This image is larger than 20 MB. Choose a smaller image.");return;}
+ if(file && file.size>50*1024*1024){setStatus("This file is larger than 50 MB. Choose a smaller image for reliable browser scanning.");return;}
+ if(file && file.size===0){setStatus("The selected file is empty or could not be read. Choose another image.");return;}
  setStatus("Loading text scanner… first use requires internet.");
  try{
    await ensureTesseract();
@@ -427,22 +429,47 @@ async function scanImage(imageSource){
    // Upscale small images and improve contrast for clearer OCR.
    let ocrSource=imageSource;
    try{
-     const bitmap=await createImageBitmap(imageSource);
-     const scale=Math.min(2.5,Math.max(1,1800/Math.max(bitmap.width,bitmap.height)));
+     let bitmap=null;
+     try{bitmap=await createImageBitmap(imageSource);}catch(bitmapError){
+       // Fallback for browser-supported formats that do not implement createImageBitmap.
+       if(imageSource instanceof Blob){
+         const objectUrl=URL.createObjectURL(imageSource);
+         try{
+           bitmap=await new Promise((resolve,reject)=>{
+             const img=new Image();
+             img.onload=()=>resolve(img);
+             img.onerror=()=>reject(new Error("This browser cannot decode this image format. Try JPG or PNG, or convert this image first."));
+             img.src=objectUrl;
+           });
+         }finally{URL.revokeObjectURL(objectUrl);}
+       }else{throw bitmapError;}
+     }
+     const width=bitmap.width||bitmap.naturalWidth,height=bitmap.height||bitmap.naturalHeight;
+     if(!width||!height)throw new Error("The browser could not read this image. Try JPG or PNG.");
+     const scale=Math.min(2.5,Math.max(1,1800/Math.max(width,height)));
      const canvas=document.createElement("canvas");
-     canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
+     canvas.width=Math.round(width*scale);canvas.height=Math.round(height*scale);
      const ctx=canvas.getContext("2d",{willReadFrequently:true});
      ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
-     const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-     const d=imageData.data;
-     for(let i=0;i<d.length;i+=4){
-       const gray=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-       const contrast=Math.max(0,Math.min(255,(gray-128)*1.25+128));
-       d[i]=d[i+1]=d[i+2]=contrast;
-     }
-     ctx.putImageData(imageData,0,0);ocrSource=canvas;
+     try{
+       const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+       const d=imageData.data;
+       for(let i=0;i<d.length;i+=4){
+         const gray=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+         const contrast=Math.max(0,Math.min(255,(gray-128)*1.25+128));
+         d[i]=d[i+1]=d[i+2]=contrast;
+       }
+       ctx.putImageData(imageData,0,0);
+     }catch(pixelError){console.log("Contrast enhancement skipped:",pixelError);}
+     ocrSource=canvas;
      bitmap.close?.();
-   }catch(prepError){console.log("Image enhancement skipped:",prepError);}
+   }catch(prepError){
+     console.log("Image preparation failed:",prepError);
+     if(imageSource instanceof File && !imageSource.type.startsWith("image/")){
+       throw new Error("This file extension is allowed in the picker, but your browser cannot decode it for text scanning. RAW/DNG/CR2/NEF and some HEIC files need conversion to JPG or PNG first.");
+     }
+     throw prepError;
+   }
    setStatus("Recognizing "+(names[$("sourceLang").value]||"selected-language")+" text in image…");
    const result=await Tesseract.recognize(ocrSource,lang,{
      logger:m=>{if(m.status==="recognizing text")setStatus("Scanning image: "+Math.round((m.progress||0)*100)+"%");}
@@ -459,7 +486,14 @@ async function scanImage(imageSource){
  }
 }
 $("photo").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(file)await scanImage(file);});
-$("quickPhoto").onclick=()=>{$("photo").click();};
+function showPhotoChoice(){const box=$("photoChoice");box.hidden=false;box.style.display="flex";}
+function hidePhotoChoice(){const box=$("photoChoice");box.hidden=true;box.style.display="none";}
+$("quickPhoto").onclick=showPhotoChoice;
+$("chooseGallery").onclick=()=>{hidePhotoChoice();$("photo").click();};
+$("chooseCamera").onclick=()=>{hidePhotoChoice();$("openCamera").click();};
+$("cancelPhotoChoice").onclick=hidePhotoChoice;
+$("photoChoice").addEventListener("click",e=>{if(e.target===$("photoChoice"))hidePhotoChoice();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")hidePhotoChoice();});
 let cameraStream=null,capturedBlob=null;
 $("openCamera").onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia){setStatus("Camera API unavailable. Open this page on HTTPS or localhost in a modern browser.");return;}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("cameraVideo").srcObject=cameraStream;$("cameraBox").hidden=false;$("capturedPreview").hidden=true;capturedBlob=null;$("scanCapture").disabled=true;setStatus("Camera is ready. Point it at the text and capture a photo.");}catch(err){setStatus("Cannot access camera: "+err.message+". Allow camera permission and use HTTPS or localhost.");}};
 function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}$("cameraVideo").srcObject=null;}
