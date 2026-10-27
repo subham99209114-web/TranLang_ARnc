@@ -170,26 +170,26 @@ textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;
 <body>
 <header><div class="brand"><div class="logo">文</div><span>LinguaMate</span></div><div class="header-right"><button class="mini" id="historyToggle" type="button" aria-expanded="false" aria-controls="historyBox">🕘 History</button><label for="themeSelect" class="pill">THEME</label><select id="themeSelect" class="theme-select" aria-label="Choose theme"><option value="light">☀️ Light</option><option value="dark">🌙 Dark</option><option value="ocean">🌊 Ocean</option><option value="system">💻 System</option></select></div></header>
 <main>
-<section class="hero"><div class="eyebrow">YOUR WORDS, EVERYWHERE</div><h1>Language has no <span class="gradient">boundaries.</span></h1><p>Type, speak, or scan text. A simple translator workspace built to run in your browser.</p></section>
+<section class="hero"><div class="eyebrow">YOUR WORDS, EVERYWHERE</div><h1>Language has no <span class="gradient">boundaries.</span></h1><p>Type, speak, scan an image, or upload common documents to extract and translate their text in your browser.</p></section>
 <div class="translator-workspace" id="translatorWorkspace">
 <section class="translator" aria-label="Translator">
 <div class="languages">
-<div class="lang-wrap"><label for="sourceLang">TRANSLATE FROM</label><select id="sourceLang"><option value="en">English</option><option value="hi" selected>Hindi</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="bn">Bengali</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="ko">Korean</option></select></div>
+<div class="lang-wrap"><label for="sourceLang">TRANSLATE FROM</label><select id="sourceLang"><option value="auto">Auto-detect (text only)</option><option value="en">English</option><option value="hi" selected>Hindi</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="bn">Bengali</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="ko">Korean</option><option value="af">Afrikaans</option><option value="sq">Albanian</option><option value="am">Amharic</option><option value="hy">Armenian</option><option value="az">Azerbaijani</option><option value="eu">Basque</option><option value="be">Belarusian</option><option value="bs">Bosnian</option><option value="bg">Bulgarian</option><option value="my">Burmese</option><option value="ca">Catalan</option><option value="ceb">Cebuano</option><option value="ny">Chichewa</option><option value="co">Corsican</option><option value="hr">Croatian</option><option value="cs">Czech</option><option value="da">Danish</option><option value="nl">Dutch</option><option value="eo">Esperanto</option><option value="et">Estonian</option><option value="tl">Filipino</option><option value="fi">Finnish</option><option value="fy">Frisian</option><option value="gl">Galician</option><option value="ka">Georgian</option><option value="el">Greek</option><option value="gu">Gujarati</option><option value="ht">Haitian Creole</option><option value="ha">Hausa</option><option value="haw">Hawaiian</option><option value="iw">Hebrew</option><option value="hmn">Hmong</option><option value="hu">Hungarian</option><option value="is">Icelandic</option><option value="ig">Igbo</option><option value="id">Indonesian</option><option value="ga">Irish</option><option value="jv">Javanese</option><option value="kn">Kannada</option><option value="kk">Kazakh</option><option value="km">Khmer</option><option value="rw">Kinyarwanda</option><option value="ku">Kurdish</option><option value="ky">Kyrgyz</option><option value="lo">Lao</option><option value="la">Latin</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="lb">Luxembourgish</option><option value="mk">Macedonian</option><option value="mg">Malagasy</option><option value="ms">Malay</option><option value="ml">Malayalam</option><option value="mt">Maltese</option><option value="mi">Maori</option><option value="mr">Marathi</option><option value="mn">Mongolian</option><option value="ne">Nepali</option><option value="no">Norwegian</option><option value="or">Odia</option><option value="ps">Pashto</option><option value="fa">Persian</option><option value="pl">Polish</option><option value="pa">Punjabi</option><option value="ro">Romanian</option><option value="sm">Samoan</option><option value="gd">Scots Gaelic</option><option value="sr">Serbian</option><option value="st">Sesotho</option><option value="sn">Shona</option><option value="sd">Sindhi</option><option value="si">Sinhala</option><option value="sk">Slovak</option><option value="sl">Slovenian</option><option value="so">Somali</option><option value="su">Sundanese</option><option value="sw">Swahili</option><option value="sv">Swedish</option><option value="tg">Tajik</option><option value="th">Thai</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="ur">Urdu</option><option value="uz">Uzbek</option><option value="vi">Vietnamese</option><option value="cy">Welsh</option><option value="xh">Xhosa</option><option value="yi">Yiddish</option><option value="yo">Yoruba</option><option value="zu">Zulu</option><option value="ckb">Kurdish (Sorani)</option><option value="ug">Uyghur</option></select></div>
 <button class="swap" id="swap" title="Swap languages" aria-label="Swap languages">⇄</button>
-<div class="lang-wrap"><label for="targetLang">TRANSLATE TO</label><select id="targetLang"><option value="en" selected>English</option><option value="hi">Hindi</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="bn">Bengali</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="ko">Korean</option></select></div>
+<div class="lang-wrap"><label for="targetLang">TRANSLATE TO</label><select id="targetLang"><option value="en" selected>English</option><option value="hi">Hindi</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="bn">Bengali</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="ko">Korean</option><option value="af">Afrikaans</option><option value="sq">Albanian</option><option value="am">Amharic</option><option value="hy">Armenian</option><option value="az">Azerbaijani</option><option value="eu">Basque</option><option value="be">Belarusian</option><option value="bs">Bosnian</option><option value="bg">Bulgarian</option><option value="my">Burmese</option><option value="ca">Catalan</option><option value="ceb">Cebuano</option><option value="ny">Chichewa</option><option value="co">Corsican</option><option value="hr">Croatian</option><option value="cs">Czech</option><option value="da">Danish</option><option value="nl">Dutch</option><option value="eo">Esperanto</option><option value="et">Estonian</option><option value="tl">Filipino</option><option value="fi">Finnish</option><option value="fy">Frisian</option><option value="gl">Galician</option><option value="ka">Georgian</option><option value="el">Greek</option><option value="gu">Gujarati</option><option value="ht">Haitian Creole</option><option value="ha">Hausa</option><option value="haw">Hawaiian</option><option value="iw">Hebrew</option><option value="hmn">Hmong</option><option value="hu">Hungarian</option><option value="is">Icelandic</option><option value="ig">Igbo</option><option value="id">Indonesian</option><option value="ga">Irish</option><option value="jv">Javanese</option><option value="kn">Kannada</option><option value="kk">Kazakh</option><option value="km">Khmer</option><option value="rw">Kinyarwanda</option><option value="ku">Kurdish</option><option value="ky">Kyrgyz</option><option value="lo">Lao</option><option value="la">Latin</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="lb">Luxembourgish</option><option value="mk">Macedonian</option><option value="mg">Malagasy</option><option value="ms">Malay</option><option value="ml">Malayalam</option><option value="mt">Maltese</option><option value="mi">Maori</option><option value="mr">Marathi</option><option value="mn">Mongolian</option><option value="ne">Nepali</option><option value="no">Norwegian</option><option value="or">Odia</option><option value="ps">Pashto</option><option value="fa">Persian</option><option value="pl">Polish</option><option value="pa">Punjabi</option><option value="ro">Romanian</option><option value="sm">Samoan</option><option value="gd">Scots Gaelic</option><option value="sr">Serbian</option><option value="st">Sesotho</option><option value="sn">Shona</option><option value="sd">Sindhi</option><option value="si">Sinhala</option><option value="sk">Slovak</option><option value="sl">Slovenian</option><option value="so">Somali</option><option value="su">Sundanese</option><option value="sw">Swahili</option><option value="sv">Swedish</option><option value="tg">Tajik</option><option value="th">Thai</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="ur">Urdu</option><option value="uz">Uzbek</option><option value="vi">Vietnamese</option><option value="cy">Welsh</option><option value="xh">Xhosa</option><option value="yi">Yiddish</option><option value="yo">Yoruba</option><option value="zu">Zulu</option><option value="ckb">Kurdish (Sorani)</option><option value="ug">Uyghur</option></select></div>
 </div>
 <div class="panels">
-<div class="panel"><div class="panel-head"><span>✎ YOUR TEXT / IMAGE</span><span id="sourceName">Hindi</span></div><div id="sourceImageWrap" class="image-preview-wrap"><img id="sourceImagePreview" alt="Uploaded source image"><div class="image-preview-caption"><span id="sourceImageCaption">Image loaded</span><button class="mini" id="removeImage" type="button">✕ Remove image</button></div></div><textarea id="input" placeholder="यहाँ वाक्य लिखें या बोलकर इनपुट दें…"></textarea><div class="panel-actions"><button class="mini" id="mic">🎙 Speak</button><button class="mini" id="clear">Cancel</button><div class="quick-tools" aria-label="Quick tools"><button class="mini" id="quickVoice" type="button" title="Voice input" aria-label="Voice input">🎤</button><button class="mini" id="quickPhoto" type="button" title="Choose an image file or photo and scan text" aria-label="Choose an image file or photo and scan text">📷</button><button class="mini" id="quickWeb" type="button" title="Check browser translation support" aria-label="Check browser translation support">🌐</button></div><span class="count" id="count">0 characters</span></div></div>
+<div class="panel"><div class="panel-head"><span>✎ YOUR TEXT / IMAGE</span><span id="sourceName">Hindi</span></div><div id="sourceImageWrap" class="image-preview-wrap"><img id="sourceImagePreview" alt="Uploaded source image"><div class="image-preview-caption"><span id="sourceImageCaption">Image loaded</span><button class="mini" id="removeImage" type="button">✕ Remove image</button></div></div><textarea id="input" placeholder="यहाँ वाक्य लिखें या बोलकर इनपुट दें…"></textarea><div class="panel-actions"><button class="mini" id="mic">🎙 Speak</button><button class="mini" id="clear">Cancel</button><div class="quick-tools" aria-label="Quick tools"><button class="mini" id="quickVoice" type="button" title="Voice input" aria-label="Voice input">🎤</button><button class="mini" id="quickPhoto" type="button" title="Upload an image, scanned PDF, or text document to translate" aria-label="Upload an image, scanned PDF, or text document to translate">📷</button><input id="anyFile" type="file" hidden accept="*/*"><button class="mini" id="quickWeb" type="button" title="Check browser translation support" aria-label="Check browser translation support">🌐</button></div><span class="count" id="count">0 characters</span></div></div>
 <div class="panel"><div class="panel-head"><span>✦ TRANSLATION</span><span id="targetName">English</span></div><canvas id="translatedImageCanvas" aria-label="Image with translated text"></canvas><div class="image-result-actions" id="imageResultActions"><button class="mini" id="downloadTranslatedImage" type="button">⬇ Download translated image</button><button class="mini" id="showSourceImage" type="button">↩ Show original</button></div><div id="output" aria-live="polite">Your translation will appear here.</div><div class="panel-actions"><button class="mini" id="copy">▣ Copy</button><button class="mini" id="listen">🔊 Listen</button><button class="mini" id="useResult">↙ Use text</button></div></div>
 </div>
 
 <section class="tools">
 <article class="tool"><div class="emoji">🎤</div><h3>Voice input</h3><p>Speak and turn your words into text using your browser's speech recognition, if supported.</p><button id="voiceTool">Start speaking</button></article>
-<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose a sharp, well-lit photo or capture it with the camera. The scanner uses one optimized OCR pass with enlarged text, local contrast enhancement and sharpening. For best accuracy, select the exact language written in the photo.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.nef,.arw,.orf,.rw2,.pef,.srw,.tif,.tiff,.bmp,.gif,.svg,.jfif,.jpe,.webp"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
+<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose a sharp photo to recognize text, or use “Upload file” in the text panel for documents such as PDF, DOCX, XLSX, PPTX and text files. For best OCR accuracy, select the exact language written in the photo before uploading. Translation supports more languages than image OCR; scanned PDFs are OCR-processed up to 20 pages.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.nef,.arw,.orf,.rw2,.pef,.srw,.tif,.tiff,.bmp,.gif,.svg,.jfif,.jpe,.webp"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
 <article class="tool"><div class="emoji">🌐</div><h3>Browser translation</h3><p>Uses the built-in browser Translator API when available. Otherwise, online translation services are used as a fallback (internet required).</p><button id="check">Check browser support</button></article>
 </section>
 
-<button class="primary" id="translate">Translate text →</button><div class="status" id="status" role="status">Ready. Choose languages and enter text.</div>
+<button class="primary" id="translate">Translate text →</button><div class="status" id="status" role="status">Ready. Choose languages and enter text. Online translation requires an internet connection.</div>
 </section>
 
 <section class="history-box" id="historyBox" aria-label="Translation history" hidden>
@@ -212,7 +212,8 @@ function applyTheme(theme){const actual=theme==='system'?(matchMedia('(prefers-c
 let savedTheme='light';try{savedTheme=localStorage.getItem('linguamate-theme')||'light'}catch(e){}applyTheme(savedTheme);
 $('themeSelect').addEventListener('change',e=>applyTheme(e.target.value));
 if(window.matchMedia){matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{if($('themeSelect').value==='system')applyTheme('system')})}
-const names={en:"English",hi:"Hindi",es:"Spanish",fr:"French",de:"German",it:"Italian",pt:"Portuguese",ru:"Russian",ar:"Arabic",bn:"Bengali",ta:"Tamil",te:"Telugu",ja:"Japanese",zh:"Chinese",ko:"Korean"};
+const names={auto:"Auto-detect",en:"English",hi:"Hindi",es:"Spanish",fr:"French",de:"German",it:"Italian",pt:"Portuguese",ru:"Russian",ar:"Arabic",bn:"Bengali",ta:"Tamil",te:"Telugu",ja:"Japanese",zh:"Chinese",ko:"Korean"};
+Object.assign(names,{af:'Afrikaans',sq:'Albanian',am:'Amharic',hy:'Armenian',az:'Azerbaijani',eu:'Basque',be:'Belarusian',bs:'Bosnian',bg:'Bulgarian',my:'Burmese',ca:'Catalan',ceb:'Cebuano',ny:'Chichewa',co:'Corsican',hr:'Croatian',cs:'Czech',da:'Danish',nl:'Dutch',eo:'Esperanto',et:'Estonian',tl:'Filipino',fi:'Finnish',fy:'Frisian',gl:'Galician',ka:'Georgian',el:'Greek',gu:'Gujarati',ht:'Haitian Creole',ha:'Hausa',haw:'Hawaiian',iw:'Hebrew',hmn:'Hmong',hu:'Hungarian',is:'Icelandic',ig:'Igbo',id:'Indonesian',ga:'Irish',jv:'Javanese',kn:'Kannada',kk:'Kazakh',km:'Khmer',rw:'Kinyarwanda',ku:'Kurdish',ky:'Kyrgyz',lo:'Lao',la:'Latin',lv:'Latvian',lt:'Lithuanian',lb:'Luxembourgish',mk:'Macedonian',mg:'Malagasy',ms:'Malay',ml:'Malayalam',mt:'Maltese',mi:'Maori',mr:'Marathi',mn:'Mongolian',ne:'Nepali',no:'Norwegian',or:'Odia',ps:'Pashto',fa:'Persian',pl:'Polish',pa:'Punjabi',ro:'Romanian',sm:'Samoan',gd:'Scots Gaelic',sr:'Serbian',st:'Sesotho',sn:'Shona',sd:'Sindhi',si:'Sinhala',sk:'Slovak',sl:'Slovenian',so:'Somali',su:'Sundanese',sw:'Swahili',sv:'Swedish',tg:'Tajik',th:'Thai',tr:'Turkish',uk:'Ukrainian',ur:'Urdu',uz:'Uzbek',vi:'Vietnamese',cy:'Welsh',xh:'Xhosa',yi:'Yiddish',yo:'Yoruba',zu:'Zulu',ckb:'Kurdish (Sorani)',ug:'Uyghur'});
 const phrases={
 "hi-en":{"नमस्ते":"Hello","धन्यवाद":"Thank you","आप कैसे हैं?":"How are you?","मैं ठीक हूँ।":"I am fine.","शुभ प्रभात":"Good morning","शुभ रात्रि":"Good night","मुझे मदद चाहिए।":"I need help.","आपका नाम क्या है?":"What is your name?","मेरा नाम":"My name is","मुझे समझ नहीं आया।":"I did not understand.","कृपया":"Please","माफ़ कीजिए":"Sorry / Excuse me","हाँ":"Yes","नहीं":"No","अलविदा":"Goodbye","मैं तुमसे प्यार करता हूँ।":"I love you.","यह कितने का है?":"How much does this cost?","पानी":"Water","मुझे भूख लगी है।":"I am hungry.","आपसे मिलकर अच्छा लगा।":"Nice to meet you."},
 "en-hi":{"hello":"नमस्ते","hi":"नमस्ते","thank you":"धन्यवाद","how are you?":"आप कैसे हैं?","i am fine.":"मैं ठीक हूँ।","good morning":"शुभ प्रभात","good night":"शुभ रात्रि","i need help.":"मुझे मदद चाहिए।","what is your name?":"आपका नाम क्या है?","please":"कृपया","sorry":"माफ़ कीजिए","yes":"हाँ","no":"नहीं","goodbye":"अलविदा","water":"पानी","i am hungry.":"मुझे भूख लगी है।","nice to meet you.":"आपसे मिलकर अच्छा लगा।","how much does this cost?":"यह कितने का है?"},
@@ -292,7 +293,7 @@ async function translate(){
  $("output").textContent="";
  try{
    setStatus("Checking browser translation support…");
-   if("Translator" in self && typeof Translator.create==="function"){
+   if(from!=="auto" && "Translator" in self && typeof Translator.create==="function"){
      try{
        const availability=await Translator.availability({sourceLanguage:from,targetLanguage:to});
        if(availability!=="unavailable"){
@@ -308,7 +309,7 @@ async function translate(){
        }
      }catch(e){console.log("Built-in translation unavailable; trying online service:",e);}
    }
-   const exact=phraseTranslate(text,from,to);
+   const exact=from==="auto"?null:phraseTranslate(text,from,to);
    if(exact!==null){$("output").textContent=exact;if(activeImageBlob){drawTranslatedImage(exact);setImageOutputMode(true);}else setImageOutputMode(false);saveHistory(text,exact,from,to);setStatus("Translated using the built-in phrasebook. Only the translated image is shown in the TRANSLATION panel.");return;}
    // Google Translate endpoint first for broader language-pair coverage; MyMemory is a fallback.
    const chunks=splitText(text,380),translated=[];
@@ -324,6 +325,7 @@ async function translate(){
        translatedText=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||"").join(""):"";
        if(!translatedText.trim())throw new Error("Empty translation");
      }catch(googleError){
+       if(from==='auto')throw new Error('Auto-detect failed. Select the source language manually and try again.');
        const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunks[i])}&langpair=${encodeURIComponent(from)}|${encodeURIComponent(to)}`;
        const response=await fetch(url);
        if(!response.ok)throw new Error("Both online translation services are unavailable.");
@@ -350,6 +352,7 @@ $("translate").onclick=translate;
 let activeRecognition=null;
 let speechFinalText="";
 function startSpeech(){
+  if($('sourceLang').value==='auto'){setStatus('Voice input needs a specific source language. Select the language you will speak, then try again.');return;}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){
     setStatus("Speech recognition is not supported here. Use an updated Chrome browser, allow microphone access, and open this page over HTTPS or localhost.");
@@ -508,74 +511,212 @@ function drawTranslatedImage(text){
 }
 $('downloadTranslatedImage').onclick=()=>{const canvas=$('translatedImageCanvas');if(!canvas.classList.contains('visible'))return setStatus('Translate an image first.');const a=document.createElement('a');a.download='TranLang_Translated_Image.png';a.href=canvas.toDataURL('image/png');a.click();};
 $('showSourceImage').onclick=()=>{$('translatedImageCanvas').classList.remove('visible');$('imageResultActions').classList.remove('visible');setImageOutputMode(false);setStatus('Showing the original image. Translate again to show the translated version.');};
+const IMAGE_EXTENSIONS=new Set(['png','jpg','jpeg','jpe','jfif','webp','bmp','gif','svg','tif','tiff','avif','heic','heif','dng','raw','cr2','cr3','nef','nrw','arw','orf','rw2','pef','srw','3fr','ari','bay','cap','data','dcs','dcr','drf','eip','erf','fff','gpr','iiq','k25','kdc','mdc','mef','mos','mrw','obm','ptx','pxn','r3d','raf','rwl','rwz','x3f']);
+function fileExtension(file){const n=(file?.name||'').toLowerCase();return n.includes('.')?n.split('.').pop():'';}
+function isImageFile(file){return !!file&&(file.type?.startsWith('image/')||IMAGE_EXTENSIONS.has(fileExtension(file)));}
+async function prepareImageForBrowser(source){
+  const ext=fileExtension(source);
+  if(['heic','heif'].includes(ext)||/image\/hei[cf]/i.test(source.type||'')){
+    await loadScriptOnce('https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js',()=>typeof window.heic2any==='function');
+    const converted=await window.heic2any({blob:source,toType:'image/jpeg',quality:0.92});
+    return Array.isArray(converted)?converted[0]:converted;
+  }
+  return source;
+}
+// OCR language codes follow Tesseract traineddata names. Translation languages and OCR models are not the same thing.
+const OCR_LANGS={en:'eng',hi:'hin',es:'spa',fr:'fra',de:'deu',it:'ita',pt:'por',ru:'rus',ar:'ara',bn:'ben',ta:'tam',te:'tel',ja:'jpn',zh:'chi_sim',ko:'kor',gu:'guj',kn:'kan',ml:'mal',mr:'mar',ne:'nep',pa:'pan',ur:'urd',vi:'vie',id:'ind',ms:'msa',nl:'nld',pl:'pol',tr:'tur',uk:'ukr',fa:'fas',iw:'heb',he:'heb',el:'ell',sv:'swe',da:'dan',fi:'fin',cs:'ces',hu:'hun',ro:'ron',hr:'hrv',sr:'srp',bg:'bul',sk:'slk',sl:'slv',lt:'lit',lv:'lav',et:'est',sw:'swa',af:'afr',az:'aze',be:'bel',bs:'bos',ca:'cat',cy:'cym',eo:'epo',eu:'eus',gl:'glg',hy:'hye',is:'isl',kk:'kaz',km:'khm',lo:'lao',mk:'mkd',mt:'mlt',no:'nor',si:'sin',sq:'sqi',th:'tha',uz:'uzb',am:'amh',my:'mya',ka:'kat',or:'ori',ps:'pus',sd:'snd',so:'som',yi:'yid',yo:'yor',zu:'zul',xh:'xho',ig:'ibo',ha:'hau',la:'lat',tl:'tgl',fil:'tgl',ceb:'ceb',jv:'jav',mi:'mri',mn:'mon',ky:'kir',tg:'tgk',ug:'uig',ckb:'kur'};
+function getOcrLanguage(code){return OCR_LANGS[code]||null;}
+function getOcrCandidates(code){
+ const selected=getOcrLanguage(code); const out=[];
+ // Try the selected language first. English is paired with many scripts because documents often mix names, numbers and English text.
+ if(selected)out.push(selected);
+ const latinCodes=new Set(['en','es','fr','de','it','pt','id','ms','nl','pl','tr','vi','af','az','bs','ca','cy','da','eo','et','eu','fi','gl','hr','hu','is','lt','lv','no','ro','sk','sl','sq','sv','sw','uz','tl','fil']);
+ if(selected && !['eng','jpn','chi_sim','kor','ara','heb','fas','tha','khm','lao','mya','amh','kat','hye','ell','rus','ukr','bul','bel','kaz','mkd','srp','tgk','uig','kur'].includes(selected))out.push(selected+'+eng');
+ if(latinCodes.has(code))out.push('eng');
+ // Universal last-resort pass prevents an unsupported dropdown option from immediately aborting OCR.
+ out.push('eng');
+ return [...new Set(out)];
+}
+async function recognizeWithFallback(image, code, logger){
+ const candidates=getOcrCandidates(code); let lastError=null, best=null;
+ for(let i=0;i<candidates.length;i++){
+   const lang=candidates[i];
+   try{
+     const result=await Tesseract.recognize(image,lang,{logger});
+     const text=(result?.data?.text||'').trim();
+     const confidence=Number(result?.data?.confidence)||0;
+     if(text && (!best || confidence>best.confidence))best={result,text,confidence,lang};
+     // Prefer selected-language result if it produced text; otherwise continue and compare fallbacks.
+     if(text && i===0 && confidence>=25)return {...best,usedFallback:false};
+   }catch(err){lastError=err;}
+ }
+ if(best)return {...best,usedFallback:best.lang!==candidates[0]};
+ throw new Error('OCR engine could not read this image. Check internet access and retry; this can happen if the language model could not download or the image is unreadable.'+(lastError?' Details: '+(lastError.message||lastError):''));
+}
 async function scanImage(imageSource){
  const file=(imageSource instanceof File)?imageSource:null;
  if(file&&file.size>50*1024*1024){setStatus('This file is larger than 50 MB. Choose a smaller image.');return;}
  if(file&&file.size===0){setStatus('The selected file is empty. Choose another image.');return;}
  try{
+   imageSource=await prepareImageForBrowser(imageSource);
    setActiveImage(imageSource,file?file.name:'Camera photo');
    setStatus('Loading multilingual OCR engine… first use requires internet.');
    await ensureTesseract();
-   const langMap={en:'eng',hi:'hin',es:'spa',fr:'fra',de:'deu',it:'ita',pt:'por',ru:'rus',ar:'ara',bn:'ben',ta:'tam',te:'tel',ja:'jpn',zh:'chi_sim',ko:'kor'};
-   const selectedOcrLang=langMap[$('sourceLang').value]||'eng';
-   const lang=selectedOcrLang==='eng'?'eng':selectedOcrLang+'+eng';
+   const selectedCode=$('sourceLang').value;
+   const selectedOcrLang=getOcrLanguage(selectedCode);
+   if(!selectedOcrLang)setStatus('This language has no dedicated OCR model in this app; trying general OCR fallback. Results may need manual correction…');
    let bitmap;
    try{bitmap=await createImageBitmap(imageSource);}catch(e){
      const url=URL.createObjectURL(imageSource);
-     try{bitmap=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Cannot decode this image format. Try JPG or PNG.'));im.src=url;});}finally{URL.revokeObjectURL(url);}
+     try{bitmap=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('This image format is not supported by this browser/OCR engine. Convert it to JPG or PNG, or try a standard image format.'));im.src=url;});}finally{URL.revokeObjectURL(url);}
    }
    const w=bitmap.width||bitmap.naturalWidth,h=bitmap.height||bitmap.naturalHeight;
-   if(!w||!h)throw new Error('The browser could not read this image. Try JPG or PNG.');
+   if(!w||!h)throw new Error('The browser could not read this image format. Try JPG, PNG, WebP, AVIF or convert the file to PNG/JPG.');
    // OCR works better on sufficiently large text. Limit huge images to avoid exhausting memory.
    const scale=Math.min(2.5,Math.max(1,2600/Math.max(w,h)));
    const base=document.createElement('canvas');base.width=Math.round(w*scale);base.height=Math.round(h*scale);
    const bctx=base.getContext('2d',{willReadFrequently:true});bctx.drawImage(bitmap,0,0,base.width,base.height);bitmap.close?.();
-   // One OCR pass, with percentile contrast normalization and mild unsharp masking.
-   // This keeps colored backgrounds from dominating while retaining anti-aliased letter edges.
+   // Single OCR run: prepare one high-readability grayscale image, then recognize once.
+   // Avoid multiple OCR passes; improve contrast and lightly sharpen without hard thresholding
+   // so thin strokes, punctuation, and scripts with diacritics are less likely to disappear.
    const sourceData=bctx.getImageData(0,0,base.width,base.height);
-   const gray=new Uint8ClampedArray(base.width*base.height),hist=new Uint32Array(256);
+   const W=base.width,H=base.height,total=W*H;
+   const gray=new Uint8ClampedArray(total),hist=new Uint32Array(256);
    for(let i=0,pix=0;i<sourceData.data.length;i+=4,pix++){
      const g=Math.round(.299*sourceData.data[i]+.587*sourceData.data[i+1]+.114*sourceData.data[i+2]);
      gray[pix]=g;hist[g]++;
    }
-   const total=gray.length;let low=0,high=255,acc=0;
+   let low=0,high=255,acc=0;
    for(let v=0;v<256;v++){acc+=hist[v];if(acc>=total*.02){low=v;break;}}
    acc=0;for(let v=255;v>=0;v--){acc+=hist[v];if(acc>=total*.02){high=v;break;}}
    if(high-low<40){low=Math.max(0,low-20);high=Math.min(255,high+20);}
-   const enhanced=document.createElement('canvas');enhanced.width=base.width;enhanced.height=base.height;
-   const ectx=enhanced.getContext('2d');const out=ectx.createImageData(base.width,base.height);
-   const contrast=new Uint8ClampedArray(gray.length);
-   for(let i=0;i<gray.length;i++)contrast[i]=Math.max(0,Math.min(255,Math.round((gray[i]-low)*255/Math.max(1,high-low))));
-   // Mild sharpening: center pixel emphasized, neighboring pixels soften sensor noise.
-   const W=base.width,H=base.height;
+   const contrast=new Uint8ClampedArray(total);
+   for(let i=0;i<total;i++)contrast[i]=Math.max(0,Math.min(255,Math.round((gray[i]-low)*255/Math.max(1,high-low))));
+   const enhanced=document.createElement('canvas');enhanced.width=W;enhanced.height=H;
+   const ectx=enhanced.getContext('2d',{willReadFrequently:true});const enhancedData=ectx.createImageData(W,H);
    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
      const i=y*W+x,left=contrast[y*W+Math.max(0,x-1)],right=contrast[y*W+Math.min(W-1,x+1)],up=contrast[Math.max(0,y-1)*W+x],down=contrast[Math.min(H-1,y+1)*W+x];
-     const v=Math.max(0,Math.min(255,Math.round(1.55*contrast[i]-.1375*(left+right+up+down))));
-     const j=i*4;out.data[j]=out.data[j+1]=out.data[j+2]=v;out.data[j+3]=255;
+     const sharp=Math.max(0,Math.min(255,Math.round(1.18*contrast[i]-.045*(left+right+up+down))));
+     const j=i*4;enhancedData.data[j]=enhancedData.data[j+1]=enhancedData.data[j+2]=sharp;enhancedData.data[j+3]=255;
    }
-   ectx.putImageData(out,0,0);
-   setStatus('Recognizing text with one enhanced OCR pass… keep this page open.');
-   const result=await Tesseract.recognize(enhanced,lang,{
-     logger:m=>{if(m.status==='recognizing text')setStatus('OCR recognition: '+Math.round((m.progress||0)*100)+'%');}
-   },{tessedit_pageseg_mode:'3',preserve_interword_spaces:'1',user_defined_dpi:'300'});
-   const best=result;
-   const recognized=(best.data.text||'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
-   const ocrLines=(best.data.lines||[]).filter(line=>line.text&&line.text.trim()&&line.bbox);
+   ectx.putImageData(enhancedData,0,0);
+   setStatus('Recognizing with the selected language first; fallback models will be tried if needed…');
+   const ocrResult=await recognizeWithFallback(enhanced,selectedCode,m=>{if(m.status==='recognizing text')setStatus('OCR recognition '+Math.round((m.progress||0)*100)+'%…');});
+   const result=ocrResult.result;
+   const recognized=(ocrResult.text||'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+   if(!recognized)throw new Error('No readable text found. Try a sharper, straight, well-lit image.');
+   const ocrLines=(result.data.lines||[]).filter(line=>line.text&&line.text.trim()&&line.bbox);
    if(ocrLines.length){
      const x1=Math.min(...ocrLines.map(line=>line.bbox.x0)),y1=Math.min(...ocrLines.map(line=>line.bbox.y0));
      const x2=Math.max(...ocrLines.map(line=>line.bbox.x1)),y2=Math.max(...ocrLines.map(line=>line.bbox.y1));
      activeOcrBounds={x:x1/base.width,y:y1/base.height,w:(x2-x1)/base.width,h:(y2-y1)/base.height};
    }else activeOcrBounds=null;
-   if(!recognized)throw new Error('No readable text found. Select the correct source language and try a sharp, well-lit photo with the text in focus.');
    $('input').value=recognized;$('count').textContent=recognized.length.toLocaleString()+' characters';
-   const confidence=Math.round(Number(best.data.confidence)||0);
+   const confidence=Math.round(Number(result.data?.confidence)||0);
    $('sourceImageCaption').textContent=`${file?file.name:'Camera photo'} · OCR confidence ${confidence}%`;
-   setStatus(`Text detected (OCR confidence indicator: ${confidence}%; this is not a translation-accuracy score). One enhanced OCR pass completed. Check the recognized text in the input field and correct any misread words before translating; choose the exact source language and use a sharp, straight, well-lit photo for best results.`);
+   setStatus(`OCR completed using ${ocrResult.lang}${ocrResult.usedFallback?' (fallback model)':''}. Confidence ${confidence}% is only an OCR indicator, not translation accuracy. Review names and unclear words before translating.`);
  }catch(err){setStatus('Image scan failed: '+(err.message||err)+' Check internet access and the selected source language.');}
  finally{$('photo').value='';}
 }
 $("photo").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(file)await scanImage(file);});
-$("quickPhoto").onclick=()=>{$("photo").click();};
+
+async function loadScriptOnce(src, test){
+  if(test()) return;
+  const existing=[...document.scripts].find(x=>x.src===src);
+  if(existing){await new Promise((resolve,reject)=>{if(test())resolve();else{existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',()=>reject(new Error('Could not load document reader library. Check your internet connection.')),{once:true});}});return;}
+  await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=src;script.onload=resolve;script.onerror=()=>reject(new Error('Could not load document reader library. Check your internet connection.'));document.head.appendChild(script);});
+}
+function decodeXmlText(xml){
+  const doc=new DOMParser().parseFromString(xml,'text/xml');
+  return [...doc.getElementsByTagName('a:t')].map(n=>n.textContent||'').join(' ').replace(/[ \t]+/g,' ').trim();
+}
+async function extractUploadedFile(file){
+  const name=file.name.toLowerCase(),ext=name.includes('.')?name.split('.').pop():'';
+  if(file.size>50*1024*1024)throw new Error('File is larger than 50 MB. Please choose a smaller file.');
+  if(file.size===0)throw new Error('This file is empty.');
+  if(isImageFile(file)){
+    await scanImage(file);return null;
+  }
+  if(['txt','md','csv','tsv','json','xml','html','htm','css','js','log','srt','vtt','rtf'].includes(ext)){
+    let text=await file.text();
+    if(['html','htm','xml','rtf'].includes(ext)){
+      const doc=new DOMParser().parseFromString(text,ext==='xml'?'text/xml':'text/html');
+      text=(doc.body?.innerText||doc.documentElement?.textContent||text);
+    }
+    if(!text.trim())throw new Error('No readable text was found in this file.');
+    return text;
+  }
+  if(ext==='pdf'){
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',()=>!!window.pdfjsLib);
+    const pdfjs=window.pdfjsLib;pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;
+    const pages=[];
+    for(let n=1;n<=pdf.numPages;n++){
+      setStatus(`Reading PDF page ${n} of ${pdf.numPages}…`);
+      const page=await pdf.getPage(n),content=await page.getTextContent();
+      pages.push(content.items.map(item=>item.str||'').join(' '));
+    }
+    let text=pages.join('\n\n').trim();
+    // Scanned PDFs often contain no text layer; render each page and OCR it using the chosen source language.
+    if(!text){
+      const selectedCode=$('sourceLang').value;
+      await ensureTesseract();
+      const ocrPages=[];
+      const limit=Math.min(pdf.numPages,20);
+      for(let n=1;n<=limit;n++){
+        setStatus(`Scanned PDF: recognizing page ${n} of ${limit}…`);
+        const page=await pdf.getPage(n),viewport=page.getViewport({scale:1.6});
+        const canvas=document.createElement('canvas');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+        await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+        const ocrResult=await recognizeWithFallback(canvas,selectedCode,m=>{if(m.status==='recognizing text')setStatus(`PDF page ${n}/${limit}: OCR ${Math.round((m.progress||0)*100)}%…`);});
+        const pageText=(ocrResult.text||'').trim();if(pageText)ocrPages.push(`[Page ${n} · OCR ${ocrResult.lang}]\n${pageText}`);
+      }
+      text=ocrPages.join('\n\n').trim();
+      if(pdf.numPages>limit)setStatus(`First ${limit} scanned PDF pages processed; split larger PDFs into smaller files.`);
+    }
+    if(!text)throw new Error('No readable text was found in this PDF. The scan may be blurry, handwritten, or in a language not supported by OCR.');
+    return text;
+  }
+  if(ext==='docx'){
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js',()=>!!window.mammoth);
+    const result=await window.mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});
+    if(!result.value.trim())throw new Error('No readable text was found in this DOCX file.');
+    return result.value;
+  }
+  if(ext==='xlsx'){
+    await loadScriptOnce('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',()=>!!window.XLSX);
+    const workbook=XLSX.read(await file.arrayBuffer(),{type:'array'});
+    const text=workbook.SheetNames.map(sheet=>`[${sheet}]\n`+XLSX.utils.sheet_to_csv(workbook.Sheets[sheet])).join('\n\n');
+    if(!text.trim())throw new Error('No readable cell text was found in this spreadsheet.');
+    return text;
+  }
+  if(ext==='pptx'){
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',()=>!!window.JSZip);
+    const zip=await JSZip.loadAsync(await file.arrayBuffer());
+    const slides=Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>Number(a.match(/slide(\d+)/)[1])-Number(b.match(/slide(\d+)/)[1]));
+    const parts=[];
+    for(const slide of slides){const xml=await zip.files[slide].async('text');parts.push(decodeXmlText(xml));}
+    const text=parts.filter(Boolean).join('\n\n');
+    if(!text.trim())throw new Error('No readable text was found in this PowerPoint file.');
+    return text;
+  }
+  throw new Error('This file type is not supported for text extraction. Supported text/document formats include TXT, MD, CSV, JSON, HTML, XML, PDF, DOCX, XLSX and PPTX. Common images are OCR-scanned; HEIC/HEIF are converted when possible. Camera RAW and proprietary formats may need conversion to JPG/PNG. APK/EXE and other binary files are not translatable image documents.');
+}
+$("anyFile").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  try{
+    setStatus(`Opening ${file.name}…`);
+    const text=await extractUploadedFile(file);
+    if(text===null)return; // Image was passed to the existing OCR scanner.
+    $("input").value=text;$("count").textContent=text.length.toLocaleString()+' characters';
+    $("sourceName").textContent=names[$("sourceLang").value]||'Source';
+    clearImageState();
+    setStatus(`Loaded “${file.name}” (${text.length.toLocaleString()} characters). Choose the source and target languages, then press Translate text.`);
+    $("input").focus();
+  }catch(err){setStatus('Could not read file: '+(err.message||err));}
+  finally{$("anyFile").value='';}
+});
+$("quickPhoto").onclick=()=>{$("anyFile").click();};
 let cameraStream=null,capturedBlob=null;
 $("openCamera").onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia){setStatus("Camera API unavailable. Open this page on HTTPS or localhost in a modern browser.");return;}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("cameraVideo").srcObject=cameraStream;$("cameraBox").hidden=false;$("capturedPreview").hidden=true;capturedBlob=null;$("scanCapture").disabled=true;setStatus("Camera is ready. Point it at the text and capture a photo.");}catch(err){setStatus("Cannot access camera: "+err.message+". Allow camera permission and use HTTPS or localhost.");}};
 function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}$("cameraVideo").srcObject=null;}
