@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TranLang.ARnc — Smart Translator</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9CDMQ4BSZ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9CDMQ4BSZ0');
+</script>
+
+<style>
+:root{color-scheme:light;--bg:#f4f7ff;--card:#fff;--ink:#17213b;--muted:#68738d;--primary:#5b5ce2;--line:#e5e9f5;--accent:#e9eaff;--field:#f8f9ff;--soft:#fafbff;--shadow:0 20px 60px #283b6b12}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#101426;--card:#191f35;--ink:#edf0ff;--muted:#a7b0ca;--primary:#9293ff;--line:#303852;--accent:#292c50;--field:#151b30;--soft:#1d243b;--shadow:0 20px 60px #0005}
+:root[data-theme="ocean"]{color-scheme:dark;--bg:#071c29;--card:#0d2a3a;--ink:#e7faff;--muted:#9bbdc8;--primary:#47d7d0;--line:#204657;--accent:#123c4c;--field:#092333;--soft:#103142;--shadow:0 20px 60px #0004}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 10% 0%,#e8eaff,transparent 35%),var(--bg);color:var(--ink)}
+header{max-width:1180px;margin:auto;padding:25px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px}.header-right{display:flex;align-items:center;gap:10px}.theme-select{border:1px solid var(--line);border-radius:999px;padding:9px 12px;background:var(--card);color:var(--ink);font-weight:700;max-width:145px}
+.brand{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:850;letter-spacing:-.5px}.logo{width:43px;height:43px;border-radius:14px;background:linear-gradient(135deg,#6c63ff,#35c6d9);display:grid;place-items:center;color:white;font-size:22px;box-shadow:0 8px 20px #6c63ff40}
+.pill{background:#e8f8f0;color:#168354;border:1px solid #c8efdc;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:750}
+main{max-width:1050px;margin:20px auto 60px;padding:0 20px}.hero{text-align:center;margin:35px 0 28px}.eyebrow{color:var(--primary);font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase}.hero h1{font-size:clamp(32px,5vw,54px);letter-spacing:-1.7px;line-height:1.08;margin:12px 0}.gradient{background:linear-gradient(90deg,#5b5ce2,#11a9bc);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--muted);max-width:650px;margin:0 auto;line-height:1.65}
+.translator{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 20px 60px #283b6b12}.languages{display:grid;grid-template-columns:1fr 52px 1fr;gap:12px;align-items:center;margin-bottom:16px}.lang-wrap{background:var(--field);border:1px solid var(--line);border-radius:14px;padding:0 12px}.lang-wrap label{font-size:11px;color:var(--muted);display:block;padding-top:9px}.lang-wrap select{width:100%;border:0;background:transparent;padding:8px 0 11px;font-size:15px;color:var(--ink);outline:none}.swap{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--primary);font-size:21px;cursor:pointer}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{border:1px solid var(--line);border-radius:17px;overflow:hidden;min-width:0}.panel-head{padding:12px 15px;background:var(--soft);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:750;color:var(--muted)}textarea{width:100%;height:220px;border:0;resize:vertical;padding:17px;font:16px/1.6 inherit;color:var(--ink);outline:none;background:white}#output{height:220px;overflow:auto;padding:17px;font-size:16px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}.panel-actions{padding:10px 13px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mini{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;cursor:pointer;color:var(--muted);font-size:12px;font-weight:700}.mini:hover{background:var(--accent);color:var(--primary)}.count{margin-left:auto;font-size:11px;color:var(--muted)}
+/* Compact quick tools beside Speak/Cancel; original tool cards remain functional but take no extra page space. */
+.quick-tools{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
+.quick-tools .mini{padding:7px 9px;min-width:38px;min-height:38px;font-size:14px}
+.tools{display:none!important}
+@media(max-width:420px){.quick-tools{gap:4px}.quick-tools .mini{padding:6px 7px;min-width:36px}}
+.primary{margin-top:16px;width:100%;border:0;border-radius:14px;background:linear-gradient(100deg,#5b5ce2,#4b83ef);color:white;font-size:15px;font-weight:800;padding:15px;cursor:pointer;box-shadow:0 8px 18px #5b5ce230}.primary:hover{filter:brightness(1.04)}.status{min-height:24px;margin:12px 2px 0;font-size:13px;color:var(--muted);line-height:1.5}.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}.tool .emoji{width:42px;height:42px;display:grid;place-items:center;background:var(--accent);border-radius:13px;font-size:22px}.tool h3{margin:12px 0 5px;font-size:16px}.tool p{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.55}.tool button,.upload-label{display:inline-block;border:1px solid var(--line);border-radius:10px;background:white;padding:9px 12px;font-size:12px;font-weight:750;color:var(--primary);cursor:pointer}.tool input[type=file]{display:none}.notice{margin-top:18px;background:#fff9e9;border:1px solid #f4e4b6;border-radius:14px;padding:14px 16px;color:#735a20;font-size:12px;line-height:1.6}.camera-box{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}.camera-top,.camera-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}.camera-box video,.camera-box img{display:block;width:100%;max-height:420px;object-fit:contain;background:#101426;border-radius:12px}.camera-box img{margin-top:12px}.camera-actions{justify-content:flex-start;margin:12px 0 0}.features{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:22px 0}.features span:before{content:"✓";color:#14a36c;font-weight:900;margin-right:6px}footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+@media(max-width:700px){header{padding:17px}.hero{margin-top:20px}.translator{padding:13px;border-radius:19px}.languages{grid-template-columns:1fr 42px 1fr;gap:6px}.swap{width:38px;height:42px}.panels{grid-template-columns:1fr}.panel textarea,#output{height:160px}.tools{grid-template-columns:1fr}.pill{font-size:10px;padding:7px 9px}.hero h1{letter-spacing:-1px}}
+
+/* Full-screen responsive layout update: keep the original visual design, expand to the available viewport. */
+html{min-height:100%;width:100%}
+body{min-height:100vh;width:100%;}
+header{max-width:none;width:100%;padding:clamp(14px,2.2vw,28px) clamp(14px,3vw,42px)}
+main{max-width:none;width:100%;margin:clamp(8px,1.5vw,20px) auto 36px;padding:0 clamp(12px,2.5vw,36px)}
+.translator{width:100%}
+.hero{margin:clamp(18px,3vw,35px) 0 clamp(18px,2.5vw,28px)}
+.panels{width:100%}
+.panel textarea,#output{height:clamp(200px,32vh,420px)}
+.tools{width:100%}
+footer{width:100%}
+@media(min-width:1200px){.translator{padding:clamp(20px,2vw,30px)}.panels{gap:clamp(14px,1.4vw,22px)}}
+@media(max-width:700px){header{align-items:flex-start;flex-wrap:wrap}.header-right{flex-wrap:wrap;justify-content:flex-end}.panel textarea,#output{height:clamp(160px,28vh,300px)}}
+
+
+/* Responsive visibility fix: keep every control accessible in portrait and landscape */
+html{width:100%;min-height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{width:100%;min-width:0;overflow-x:hidden}
+header{width:100%;max-width:none;flex-wrap:wrap;padding:clamp(12px,2.2vw,25px);}
+.header-right{flex-wrap:wrap;min-width:0;justify-content:flex-end}
+main{width:100%;max-width:none;margin:clamp(12px,2vw,24px) auto 36px;padding-inline:clamp(10px,2vw,22px)}
+.translator,.tool,.camera-box{min-width:0;max-width:100%}
+.languages{grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr)}
+.lang-wrap{min-width:0;padding-inline:9px}
+.lang-wrap select{min-width:0;max-width:100%;font-size:clamp(12px,1.2vw,15px)}
+.panels{grid-template-columns:repeat(2,minmax(0,1fr))}
+.panel{min-width:0}
+textarea,#output{width:100%;min-width:0;min-height:150px;overflow-wrap:anywhere;}
+.panel-actions{min-width:0;flex-wrap:wrap;align-items:center}
+.panel-actions .mini{max-width:100%;white-space:normal}
+.count{margin-left:auto;overflow-wrap:anywhere}
+.primary,.tool button,.upload-label,.mini,.swap{touch-action:manipulation;min-height:40px}
+.tools{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tool p{overflow-wrap:anywhere}
+.tool button,.upload-label{max-width:100%;white-space:normal}
+.camera-actions,.camera-top{flex-wrap:wrap}
+@media(max-width:760px){
+ header{align-items:flex-start;gap:12px}
+ .header-right{justify-content:flex-start;width:100%;gap:7px}
+ .brand{font-size:19px}
+ .panels{grid-template-columns:minmax(0,1fr)}
+ .tools{grid-template-columns:minmax(0,1fr)}
+ .panel textarea,#output{height:clamp(170px,32vh,300px);min-height:170px}
+ .translator{padding:clamp(10px,3vw,16px)}
+ .hero{margin:20px 0}
+ .hero p{padding-inline:4px}
+}
+@media(max-width:420px){
+ .languages{grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);gap:5px}
+ .swap{width:34px;height:40px;padding:0}
+ .lang-wrap{padding-inline:6px}
+ .lang-wrap label{font-size:9px;letter-spacing:0}
+ .lang-wrap select{font-size:12px;padding-block:8px}
+ .panel-head{gap:8px;padding:10px}
+ .panel-actions{gap:6px;padding:9px}
+ .count{width:100%;margin-left:0}
+ .pill{white-space:normal}
+}
+/* Landscape phones: use the extra width but allow the page to scroll vertically. */
+@media(max-height:500px) and (orientation:landscape){
+ header{padding:10px 14px}
+ .hero{margin:10px 0 14px}
+ .hero h1{font-size:clamp(25px,5vw,38px)}
+ .hero p{font-size:13px}
+ main{margin-top:8px}
+ .panel textarea,#output{height:clamp(130px,38vh,220px);min-height:130px}
+ .tools{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+
+/* Keep typed and translated text readable in every selected theme. */
+#input, #output {
+  background: var(--field) !important;
+  color: var(--ink) !important;
+  caret-color: var(--primary);
+  border-color: var(--line);
+  color-scheme: inherit;
+}
+#input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+#input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+#output {
+  border-top: 0;
+}
+
+
+.translator-workspace{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start;width:100%;min-width:0}.translator-workspace.history-open{grid-template-columns:minmax(0,1fr) minmax(260px,330px)}.history-box{position:static;width:100%;max-height:calc(100vh - 125px);overflow-y:auto;margin:0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 18px 55px #10142618;min-width:0}.history-box[hidden]{display:none!important}.translator{min-width:0}.translator-workspace.history-open .translator{padding:clamp(12px,1.5vw,20px)}.translator-workspace.history-open .panels{gap:10px}.translator-workspace.history-open .panel textarea,.translator-workspace.history-open #output{height:clamp(160px,25vh,300px)}
+.history-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.history-head h2{font-size:18px;margin:0 0 5px;color:var(--ink)}
+.history-head p{font-size:12px;color:var(--muted);margin:0;line-height:1.5}
+.history-list{display:grid;gap:10px}
+.history-item{border:1px solid var(--line);background:var(--field);border-radius:13px;padding:12px;min-width:0}
+.history-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-bottom:8px}
+.history-texts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.history-text{min-width:0;overflow-wrap:anywhere;white-space:pre-wrap;font-size:13px;line-height:1.55;color:var(--ink)}
+.history-label{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;margin-bottom:4px}
+.history-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.history-empty{color:var(--muted);font-size:13px;margin:4px 0}
+@media(max-width:900px){.translator-workspace.history-open{grid-template-columns:minmax(0,1fr)}.history-box{max-height:55vh}.translator-workspace.history-open .panels{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.history-texts{grid-template-columns:1fr}.history-box{width:100%;max-height:50vh;padding:13px}}
+
+
+/* High-accuracy image translation workspace */
+.image-preview-wrap{display:none;margin:0 0 12px;border:1px solid var(--line);border-radius:12px;padding:8px;background:var(--card)}
+.image-preview-wrap.visible{display:block}
+/* In image mode keep OCR text internal for translation, but never show it under Remove image. */
+.panel.image-source-active #input{display:none !important}
+.panel.image-source-active > .panel-actions{display:none !important}
+.image-preview-wrap img{display:block;width:100%;max-height:330px;object-fit:contain;border-radius:8px;background:#101426}
+.image-preview-caption{font-size:11px;color:var(--muted);margin:7px 2px 0;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+#translatedImageCanvas{display:none;width:100%;height:auto;max-height:620px;object-fit:contain;border-radius:12px;margin-bottom:12px;background:#101426}
+#translatedImageCanvas.visible{display:block}
+.panel.image-translation-active #output{display:none !important}
+.panel.image-translation-active > .panel-actions{display:none !important}
+.panel.image-translation-active #translatedImageCanvas{display:block !important}
+.panel.image-translation-active .panel-head{margin-bottom:12px}
+.panel.image-translation-active #translatedImageCanvas{max-height:none;width:100%;height:auto;object-fit:contain}
+.panel.image-translation-active > :not(.panel-head):not(#translatedImageCanvas):not(#imageResultActions){display:none !important}
+.panel.image-translation-active #imageResultActions{display:flex !important}
+.panel.image-translation-active #output{display:none !important}
+.panel.image-translation-active{background:var(--card)}
+.image-result-actions{display:none;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.image-result-actions.visible{display:flex}
+#output{overflow-wrap:anywhere;white-space:pre-wrap}
+@media(max-width:600px){.image-preview-wrap img{max-height:250px}#translatedImageCanvas{max-height:480px}}
+
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">文</div><span>LinguaMate</span></div><div class="header-right"><button class="mini" id="historyToggle" type="button" aria-expanded="false" aria-controls="historyBox">🕘 History</button><label for="themeSelect" class="pill">THEME</label><select id="themeSelect" class="theme-select" aria-label="Choose theme"><option value="light">☀️ Light</option><option value="dark">🌙 Dark</option><option value="ocean">🌊 Ocean</option><option value="system">💻 System</option></select></div></header>
+<main>
+<section class="hero"><div class="eyebrow">YOUR WORDS, EVERYWHERE</div><h1>Language has no <span class="gradient">boundaries.</span></h1><p>Type, speak, or scan text. A simple translator workspace built to run in your browser.</p></section>
+<div class="translator-workspace" id="translatorWorkspace">
+<section class="translator" aria-label="Translator">
+<div class="languages">
+<div class="lang-wrap"><label for="sourceLang">TRANSLATE FROM</label><select id="sourceLang"><option value="en">English</option><option value="hi" selected>Hindi</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="bn">Bengali</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="ko">Korean</option></select></div>
+<button class="swap" id="swap" title="Swap languages" aria-label="Swap languages">⇄</button>
+<div class="lang-wrap"><label for="targetLang">TRANSLATE TO</label><select id="targetLang"><option value="en" selected>English</option><option value="hi">Hindi</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="bn">Bengali</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="ko">Korean</option></select></div>
+</div>
+<div class="panels">
+<div class="panel"><div class="panel-head"><span>✎ YOUR TEXT / IMAGE</span><span id="sourceName">Hindi</span></div><div id="sourceImageWrap" class="image-preview-wrap"><img id="sourceImagePreview" alt="Uploaded source image"><div class="image-preview-caption"><span id="sourceImageCaption">Image loaded</span><button class="mini" id="removeImage" type="button">✕ Remove image</button></div></div><textarea id="input" placeholder="यहाँ वाक्य लिखें या बोलकर इनपुट दें…"></textarea><div class="panel-actions"><button class="mini" id="mic">🎙 Speak</button><button class="mini" id="clear">Cancel</button><div class="quick-tools" aria-label="Quick tools"><button class="mini" id="quickVoice" type="button" title="Voice input" aria-label="Voice input">🎤</button><button class="mini" id="quickPhoto" type="button" title="Choose an image file or photo and scan text" aria-label="Choose an image file or photo and scan text">📷</button><button class="mini" id="quickWeb" type="button" title="Check browser translation support" aria-label="Check browser translation support">🌐</button></div><span class="count" id="count">0 characters</span></div></div>
+<div class="panel"><div class="panel-head"><span>✦ TRANSLATION</span><span id="targetName">English</span></div><canvas id="translatedImageCanvas" aria-label="Image with translated text"></canvas><div class="image-result-actions" id="imageResultActions"><button class="mini" id="downloadTranslatedImage" type="button">⬇ Download translated image</button><button class="mini" id="showSourceImage" type="button">↩ Show original</button></div><div id="output" aria-live="polite">Your translation will appear here.</div><div class="panel-actions"><button class="mini" id="copy">▣ Copy</button><button class="mini" id="listen">🔊 Listen</button><button class="mini" id="useResult">↙ Use text</button></div></div>
+</div>
+
+<section class="tools">
+<article class="tool"><div class="emoji">🎤</div><h3>Voice input</h3><p>Speak and turn your words into text using your browser's speech recognition, if supported.</p><button id="voiceTool">Start speaking</button></article>
+<article class="tool"><div class="emoji">📷</div><h3>Photo & camera scanner</h3><p>Choose a sharp, well-lit photo or capture it with the camera. The scanner uses one optimized OCR pass with enlarged text, local contrast enhancement and sharpening. For best accuracy, select the exact language written in the photo.</p><label class="upload-label" for="photo">Choose photo</label><input id="photo" type="file" accept="image/*,.heic,.heif,.avif,.dng,.raw,.cr2,.cr3,.nef,.arw,.orf,.rw2,.pef,.srw,.tif,.tiff,.bmp,.gif,.svg,.jfif,.jpe,.webp"><button id="openCamera" style="margin-left:6px">Open camera</button></article>
+<article class="tool"><div class="emoji">🌐</div><h3>Browser translation</h3><p>Uses the built-in browser Translator API when available. Otherwise, online translation services are used as a fallback (internet required).</p><button id="check">Check browser support</button></article>
+</section>
+
+<button class="primary" id="translate">Translate text →</button><div class="status" id="status" role="status">Ready. Choose languages and enter text.</div>
+</section>
+
+<section class="history-box" id="historyBox" aria-label="Translation history" hidden>
+  <div class="history-head">
+    <div><h2>🕘 Translation History</h2><p>Your previous translations will be saved in this browser.</p></div>
+    <button class="mini" id="clearHistory" type="button" title="Delete every saved translation">🗑️ Clear All History</button>
+  </div>
+  <div id="historyList" class="history-list"><p class="history-empty">There is no history yet.</p></div>
+</section>
+
+</div><!-- end translator workspace -->
+
+<div id="cameraBox" class="camera-box" hidden><div class="camera-top"><b>Camera scanner</b><button id="closeCamera" class="mini">✕ Close</button></div><video id="cameraVideo" autoplay playsinline></video><canvas id="cameraCanvas" hidden></canvas><div class="camera-actions"><button id="capturePhoto" class="mini">📸 Capture photo</button><button id="scanCapture" class="mini" disabled>Recognize captured photo</button></div><img id="capturedPreview" alt="Captured image preview" hidden></div>
+</main>
+<footer><div></div>Contact us:- Website: TranLang.ARnc Privacy / Support Email: subham99209114@gmail.com Contact no: 7544095688<div>© 2026 TranLang.ARnc. All rights reserved.</div></footer>
+<script>
+const $=id=>document.getElementById(id);
+// Working theme selector; preference is saved locally when browser storage is available.
+function applyTheme(theme){const actual=theme==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):theme;document.documentElement.dataset.theme=actual;$('themeSelect').value=theme;try{localStorage.setItem('linguamate-theme',theme)}catch(e){}}
+let savedTheme='light';try{savedTheme=localStorage.getItem('linguamate-theme')||'light'}catch(e){}applyTheme(savedTheme);
+$('themeSelect').addEventListener('change',e=>applyTheme(e.target.value));
+if(window.matchMedia){matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{if($('themeSelect').value==='system')applyTheme('system')})}
+const names={en:"English",hi:"Hindi",es:"Spanish",fr:"French",de:"German",it:"Italian",pt:"Portuguese",ru:"Russian",ar:"Arabic",bn:"Bengali",ta:"Tamil",te:"Telugu",ja:"Japanese",zh:"Chinese",ko:"Korean"};
+const phrases={
+"hi-en":{"नमस्ते":"Hello","धन्यवाद":"Thank you","आप कैसे हैं?":"How are you?","मैं ठीक हूँ।":"I am fine.","शुभ प्रभात":"Good morning","शुभ रात्रि":"Good night","मुझे मदद चाहिए।":"I need help.","आपका नाम क्या है?":"What is your name?","मेरा नाम":"My name is","मुझे समझ नहीं आया।":"I did not understand.","कृपया":"Please","माफ़ कीजिए":"Sorry / Excuse me","हाँ":"Yes","नहीं":"No","अलविदा":"Goodbye","मैं तुमसे प्यार करता हूँ।":"I love you.","यह कितने का है?":"How much does this cost?","पानी":"Water","मुझे भूख लगी है।":"I am hungry.","आपसे मिलकर अच्छा लगा।":"Nice to meet you."},
+"en-hi":{"hello":"नमस्ते","hi":"नमस्ते","thank you":"धन्यवाद","how are you?":"आप कैसे हैं?","i am fine.":"मैं ठीक हूँ।","good morning":"शुभ प्रभात","good night":"शुभ रात्रि","i need help.":"मुझे मदद चाहिए।","what is your name?":"आपका नाम क्या है?","please":"कृपया","sorry":"माफ़ कीजिए","yes":"हाँ","no":"नहीं","goodbye":"अलविदा","water":"पानी","i am hungry.":"मुझे भूख लगी है।","nice to meet you.":"आपसे मिलकर अच्छा लगा।","how much does this cost?":"यह कितने का है?"},
+"es-en":{"hola":"hello","gracias":"thank you","¿cómo estás?":"how are you?","buenos días":"good morning","buenas noches":"good night","por favor":"please","adiós":"goodbye","sí":"yes","no":"no"},
+"fr-en":{"bonjour":"hello","merci":"thank you","comment ça va ?":"how are you?","s'il vous plaît":"please","au revoir":"goodbye","oui":"yes","non":"no"},
+"de-en":{"hallo":"hello","danke":"thank you","wie geht es dir?":"how are you?","bitte":"please","auf wiedersehen":"goodbye","ja":"yes","nein":"no"}
+};
+function updateNames(){$("sourceName").textContent=names[$("sourceLang").value];$("targetName").textContent=names[$("targetLang").value]}
+$("sourceLang").addEventListener("change",updateNames);$("targetLang").addEventListener("change",updateNames);
+$("input").addEventListener("input",()=>$("count").textContent=$("input").value.length.toLocaleString()+" characters");
+$("swap").onclick=()=>{let a=$("sourceLang").value;$("sourceLang").value=$("targetLang").value;$("targetLang").value=a;let o=$("output").textContent;if(o!=="Your translation will appear here.")$("input").value=o;updateNames();$("count").textContent=$("input").value.length.toLocaleString()+" characters"};
+$("clear").onclick=()=>{if(activeRecognition){try{activeRecognition.stop()}catch(e){}activeRecognition=null;finishSpeechUI()}speechFinalText="";clearImageState();$("input").value="";$("output").textContent="Your translation will appear here.";$("count").textContent="0 characters";$("status").textContent="Cleared."};
+$("copy").onclick=async()=>{let t=$("output").textContent;if(!t||t==="Your translation will appear here.")return setStatus("There is no translation to copy yet.");try{await navigator.clipboard.writeText(t);setStatus("Translation copied.")}catch(e){setStatus("Copy was blocked by the browser. Select the result and copy it manually.")}};
+$("useResult").onclick=()=>{let t=$("output").textContent;if(t!=="Your translation will appear here."){$("input").value=t;$("count").textContent=t.length.toLocaleString()+" characters";let a=$("sourceLang").value;$("sourceLang").value=$("targetLang").value;$("targetLang").value=a;updateNames();setStatus("Result moved to input and languages swapped.")}};
+
+function setStatus(s){$("status").textContent=s}
+
+// History page toggle: click once to show, click again to hide.
+const historyToggle=$("historyToggle");
+historyToggle.addEventListener("click",()=>{
+  const box=$("historyBox");
+  const workspace=$("translatorWorkspace");
+  const show=box.hidden;
+  box.hidden=!show;
+  workspace.classList.toggle("history-open",show);
+  historyToggle.setAttribute("aria-expanded",String(show));
+  historyToggle.textContent=show?"✕ Hide History":"🕘 History";
+  if(show){renderHistory();}
+});
+
+// Translation history is stored locally in this browser; no account/server is needed.
+const HISTORY_KEY="linguamate-translation-history-v1";
+function readHistory(){try{const data=JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]");return Array.isArray(data)?data:[]}catch(e){return[]}}
+function writeHistory(items){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(items.slice(0,100)));return true}catch(e){setStatus("Translation worked, but browser storage is full or unavailable; history could not be saved.");return false}}
+function escapeHistoryText(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
+function renderHistory(){
+ const list=$("historyList"),items=readHistory();
+ if(!items.length){list.innerHTML='<p class="history-empty">There is no history yet. After translate it will appear here.</p>';return}
+ list.innerHTML=items.map((item,index)=>`<article class="history-item">
+ <div class="history-meta"><span>${escapeHistoryText(names[item.from]||item.from)} → ${escapeHistoryText(names[item.to]||item.to)}</span><span>${escapeHistoryText(item.date||"")}</span></div>
+ <div class="history-texts"><div><div class="history-label">Original</div><div class="history-text">${escapeHistoryText(item.source)}</div></div><div><div class="history-label">Translation</div><div class="history-text">${escapeHistoryText(item.result)}</div></div></div>
+ <div class="history-actions"><button class="mini" data-history-use="${index}" type="button">Use again</button><button class="mini" data-history-copy="${index}" type="button">Copy translation</button><button class="mini" data-history-delete="${index}" type="button">Delete</button></div>
+ </article>`).join("");
+}
+function saveHistory(source,result,from,to){
+ if(!source.trim()||!result.trim()||result==="Your translation will appear here.")return;
+ const items=readHistory();
+ items.unshift({source,result,from,to,date:new Date().toLocaleString()});
+ writeHistory(items);renderHistory();
+}
+$("historyList").addEventListener("click",async e=>{
+ const b=e.target.closest("button");if(!b)return;const items=readHistory();
+ if(b.dataset.historyUse!==undefined){const item=items[Number(b.dataset.historyUse)];if(!item)return;$("input").value=item.source;$("output").textContent=item.result;$("sourceLang").value=item.from;$("targetLang").value=item.to;updateNames();$("count").textContent=$("input").value.length.toLocaleString()+" characters";setStatus("History item restored.");window.scrollTo({top:0,behavior:"smooth"});}
+ if(b.dataset.historyCopy!==undefined){const item=items[Number(b.dataset.historyCopy)];if(!item)return;try{await navigator.clipboard.writeText(item.result);setStatus("History translation copied.")}catch(err){setStatus("Copy blocked by browser. Select and copy the text manually.")}}
+ if(b.dataset.historyDelete!==undefined){items.splice(Number(b.dataset.historyDelete),1);writeHistory(items);renderHistory();setStatus("History item deleted.")}
+});
+$("clearHistory").onclick=()=>{if(!readHistory().length){setStatus("History is already empty.");return}if(confirm("Are you sure you want to clear ALL saved translation history at once? This cannot be undone.")){try{localStorage.removeItem(HISTORY_KEY)}catch(e){}renderHistory();setStatus("Translation history cleared.")}};
+
+function phraseTranslate(text,from,to){let direct=phrases[from+"-"+to];if(direct){let key=text.trim().toLocaleLowerCase();if(direct[key])return direct[key];if(direct[text.trim()])return direct[text.trim()];}
+if(from===to)return text;
+return null}
+function decodeHtml(value){const el=document.createElement("textarea");el.innerHTML=value;return el.value;}
+function splitText(text,max){
+  // Split at sentence/word boundaries, preserving paragraph separators as far as possible.
+  const parts=[];let remaining=text;
+  while(remaining.length>max){let cut=-1;
+    for(const sep of ['\n\n','\n','. ','! ','? ','; ',': ', ' ']){const i=remaining.lastIndexOf(sep,max);if(i>Math.floor(max*.55)){cut=i+(sep===' ' ? 0 : sep.length);break}}
+    if(cut<1)cut=max;parts.push(remaining.slice(0,cut));remaining=remaining.slice(cut);
+  }if(remaining)parts.push(remaining);return parts;
+}
+async function translate(){
+ let text=$("input").value.trim(),from=$("sourceLang").value,to=$("targetLang").value;
+ if(!text)return setStatus("Please enter, speak, or scan some text first.");
+ if(from===to){$("output").textContent=text;if(activeImageBlob){drawTranslatedImage(text);setImageOutputMode(true);}else setImageOutputMode(false);saveHistory(text,text,from,to);return setStatus("Source and target languages are the same; only the translated image is shown in the TRANSLATION panel.");}
+ $("translate").disabled=true;
+ const oldLabel=$("translate").textContent;$("translate").textContent="Translating…";
+ $("output").textContent="";
+ try{
+   setStatus("Checking browser translation support…");
+   if("Translator" in self && typeof Translator.create==="function"){
+     try{
+       const availability=await Translator.availability({sourceLanguage:from,targetLanguage:to});
+       if(availability!=="unavailable"){
+         const translator=await Translator.create({sourceLanguage:from,targetLanguage:to,
+           monitor(m){m.addEventListener("downloadprogress",e=>setStatus("Downloading language model: "+Math.round((e.loaded||0)*100)+"%"));}});
+         try{
+           const result=await translator.translate(text);
+           if(result && result.trim()){
+             $("output").textContent=result;if(activeImageBlob){drawTranslatedImage(result);setImageOutputMode(true);}else setImageOutputMode(false);saveHistory(text,result,from,to);
+             setStatus("Translated using your browser's built-in translation engine. Only the translated image is shown in the TRANSLATION panel.");return;
+           }
+         }finally{translator.destroy?.();}
+       }
+     }catch(e){console.log("Built-in translation unavailable; trying online service:",e);}
+   }
+   const exact=phraseTranslate(text,from,to);
+   if(exact!==null){$("output").textContent=exact;if(activeImageBlob){drawTranslatedImage(exact);setImageOutputMode(true);}else setImageOutputMode(false);saveHistory(text,exact,from,to);setStatus("Translated using the built-in phrasebook. Only the translated image is shown in the TRANSLATION panel.");return;}
+   // Google Translate endpoint first for broader language-pair coverage; MyMemory is a fallback.
+   const chunks=splitText(text,380),translated=[];
+   let engine="Google translation service";
+   for(let i=0;i<chunks.length;i++){
+     setStatus(`Translating part ${i+1} of ${chunks.length}…`);
+     let translatedText="";
+     try{
+       const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(from)}&tl=${encodeURIComponent(to)}&dt=t&q=${encodeURIComponent(chunks[i])}`;
+       const response=await fetch(url);
+       if(!response.ok)throw new Error("Google service HTTP "+response.status);
+       const data=await response.json();
+       translatedText=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||"").join(""):"";
+       if(!translatedText.trim())throw new Error("Empty translation");
+     }catch(googleError){
+       const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunks[i])}&langpair=${encodeURIComponent(from)}|${encodeURIComponent(to)}`;
+       const response=await fetch(url);
+       if(!response.ok)throw new Error("Both online translation services are unavailable.");
+       const data=await response.json();
+       if(data.responseStatus && Number(data.responseStatus)!==200)throw new Error(data.responseDetails||"Translation service limit reached.");
+       translatedText=decodeHtml(data.responseData?.translatedText||"");
+       if(!translatedText.trim())throw new Error("No translation returned for this language pair.");
+       engine="MyMemory fallback";
+     }
+     translated.push(translatedText);
+   }
+   const finalResult=translated.join("");
+   $("output").textContent=finalResult;if(activeImageBlob){drawTranslatedImage(finalResult);setImageOutputMode(true);}else setImageOutputMode(false);saveHistory(text,finalResult,from,to);
+   setStatus(`Translation complete using ${engine}. Please review names, idioms, and important text for accuracy.`);
+ }catch(err){
+   $("output").textContent="";
+   if(activeImageBlob){setImageOutputMode(false);$("translatedImageCanvas").classList.remove("visible");$("imageResultActions").classList.remove("visible");}
+   setStatus("Translation failed. Check your internet connection and confirm that the selected languages are supported. Details: "+(err.message||err));
+ }finally{
+   $("translate").disabled=false;$("translate").textContent=oldLabel;
+ }
+}
+$("translate").onclick=translate;
+let activeRecognition=null;
+let speechFinalText="";
+function startSpeech(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    setStatus("Speech recognition is not supported here. Use an updated Chrome browser, allow microphone access, and open this page over HTTPS or localhost.");
+    return;
+  }
+  // Clicking either voice button again stops the current listening session.
+  if(activeRecognition){
+    try{activeRecognition.stop()}catch(e){}
+    activeRecognition=null;
+    $("mic").textContent="🎙 Speak";
+    $("voiceTool").textContent="Start speaking";
+    setStatus("Voice input stopped. You can edit the recognized text.");
+    return;
+  }
+  const localeMap={hi:"hi-IN",en:"en-US",es:"es-ES",fr:"fr-FR",de:"de-DE",it:"it-IT",pt:"pt-PT",ru:"ru-RU",ar:"ar-SA",bn:"bn-IN",ta:"ta-IN",te:"te-IN",ja:"ja-JP",zh:"zh-CN",ko:"ko-KR"};
+  const r=new SR();
+  r.lang=localeMap[$("sourceLang").value]||$("sourceLang").value;
+  r.continuous=true;
+  r.interimResults=true;
+  r.maxAlternatives=3;
+  activeRecognition=r;
+  speechFinalText=$("input").value.trim();
+  $("mic").textContent="⏹ Stop";
+  $("voiceTool").textContent="Stop speaking";
+  r.onstart=()=>setStatus("Listening in "+(names[$("sourceLang").value]||r.lang)+". Speak clearly; pause between sentences. Click Stop when finished.");
+  r.onresult=e=>{
+    let interim="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const result=e.results[i];
+      const best=result[0];
+      if(result.isFinal && best){
+        const phrase=(best.transcript||"").trim();
+        if(phrase) speechFinalText=(speechFinalText ? speechFinalText+" " : "")+phrase;
+      }else if(best){
+        interim+=(best.transcript||"");
+      }
+    }
+    const shown=[speechFinalText,interim.trim()].filter(Boolean).join(" ").trim();
+    $("input").value=shown;
+    $("count").textContent=shown.length.toLocaleString()+" characters";
+    const confidence=e.results[e.results.length-1]?.[0]?.confidence;
+    if(interim.trim()){
+      setStatus("Hearing: "+interim.trim()+" … (live preview; pause briefly for words to finalize)");
+    }else if(typeof confidence==="number" && confidence<0.55){
+      setStatus("Speech captured, but recognition confidence is low. Check the text and correct any mistakes before translating.");
+    }else{
+      setStatus("Speech recognized. Keep speaking or click Stop to finish; review the text before translating.");
+    }
+  };
+  r.onerror=e=>{
+    const messages={
+      "not-allowed":"Microphone permission was denied. Allow microphone access in your browser's site settings.",
+      "no-speech":"No speech detected. Check the microphone and speak a little louder.",
+      "audio-capture":"No microphone was found. Connect or enable a microphone.",
+      "network":"The browser speech service needs a working internet connection or is temporarily unavailable.",
+      "language-not-supported":"Speech recognition for this language is not supported by this browser."
+    };
+    setStatus("Voice input: "+(messages[e.error]||e.error||"recognition error")+".");
+    if(e.error==="not-allowed"||e.error==="audio-capture") finishSpeechUI();
+  };
+  r.onend=()=>{
+    if(activeRecognition===r){
+      activeRecognition=null;
+      finishSpeechUI();
+      if($("input").value.trim()) setStatus("Voice input finished. Review the recognized words, then press Translate text.");
+    }
+  };
+  try{r.start()}catch(e){
+    activeRecognition=null;finishSpeechUI();
+    setStatus("Could not start the microphone. Check permission and try again.");
+  }
+}
+function finishSpeechUI(){
+  $("mic").textContent="🎙 Speak";
+  $("voiceTool").textContent="Start speaking";
+}
+$("mic").onclick=startSpeech;$("voiceTool").onclick=startSpeech;$("quickVoice").onclick=startSpeech;
+$("listen").onclick=()=>{let t=$("output").textContent;if(!t||t==="Your translation will appear here.")return setStatus("There is no result to read aloud.");if(!("speechSynthesis"in window))return setStatus("Text-to-speech is not supported by this browser.");speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang=({hi:"hi-IN",en:"en-US",es:"es-ES",fr:"fr-FR",de:"de-DE",it:"it-IT",pt:"pt-PT",ru:"ru-RU",ar:"ar-SA",bn:"bn-BD",ta:"ta-IN",te:"te-IN",ja:"ja-JP",zh:"zh-CN",ko:"ko-KR"})[$("targetLang").value]||$("targetLang").value;speechSynthesis.speak(u);setStatus("Reading translation aloud.")};
+$("check").onclick=()=>setStatus(("Translator" in self&&typeof Translator.create==="function")?"This browser exposes the built-in Translator API. The app will use it when the selected language pair is available.":"Built-in Translator API not detected. Online translation requires internet; the app will try its online translation services.");$("quickWeb").onclick=$("check").onclick;
+async function ensureTesseract(){
+ if(!window.Tesseract){
+   await new Promise((resolve,reject)=>{
+     const script=document.createElement("script");
+     script.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+     script.onload=resolve;script.onerror=()=>reject(new Error("Could not load OCR library. Check internet access or CDN availability."));
+     document.head.appendChild(script);
+   });
+ }
+ return window.Tesseract;
+}
+let activeImageBlob=null, activeImageObjectUrl=null, lastTranslatedImageUrl=null, activeOcrBounds=null;
+const translationPanel=$('output').closest('.panel');
+function setImageOutputMode(enabled){translationPanel.classList.toggle('image-translation-active',!!enabled);$('output').style.display=enabled?'none':'';const actions=translationPanel.querySelector(':scope > .panel-actions');if(actions)actions.style.display=enabled?'none':'';}
+function clearImageState(){
+  $('sourceImageWrap').closest('.panel').classList.remove('image-source-active');
+  activeImageBlob=null;activeOcrBounds=null;
+  if(activeImageObjectUrl){URL.revokeObjectURL(activeImageObjectUrl);activeImageObjectUrl=null;}
+  $('sourceImageWrap').classList.remove('visible');$('sourceImagePreview').removeAttribute('src');
+  $('translatedImageCanvas').classList.remove('visible');$('imageResultActions').classList.remove('visible');setImageOutputMode(false);
+  $('sourceImageCaption').textContent='Image loaded';
+}
+function setActiveImage(source,label='Image selected'){
+  if(activeImageObjectUrl)URL.revokeObjectURL(activeImageObjectUrl);
+  activeImageBlob=source instanceof Blob?source:null;
+  activeImageObjectUrl=source instanceof Blob?URL.createObjectURL(source):String(source||'');
+  $('sourceImagePreview').src=activeImageObjectUrl;
+  $('sourceImageWrap').classList.add('visible');
+  $('sourceImageWrap').closest('.panel').classList.add('image-source-active');
+  $('sourceImageCaption').textContent=label;setImageOutputMode(false);
+  $('translatedImageCanvas').classList.remove('visible');$('imageResultActions').classList.remove('visible');setImageOutputMode(false);
+}
+$('removeImage').onclick=()=>{clearImageState();$('capturedPreview').hidden=true;setStatus('Image removed. You can type text or choose another image.');};
+function drawTranslatedImage(text){
+  const img=$('sourceImagePreview'),canvas=$('translatedImageCanvas');
+  if(!img.complete||!img.naturalWidth||!text.trim()){img.onload=()=>{if($('output').textContent.trim())drawTranslatedImage($('output').textContent);};return;}
+  const maxW=1800,scale=Math.min(1,maxW/img.naturalWidth);
+  canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));
+  canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  // Replace the OCR-detected writing area inside the image, rather than adding a caption over the bottom.
+  let box=activeOcrBounds?{
+    x:activeOcrBounds.x*canvas.width,y:activeOcrBounds.y*canvas.height,
+    w:activeOcrBounds.w*canvas.width,h:activeOcrBounds.h*canvas.height
+  }:null;
+  if(!box||box.w<2||box.h<2){
+    const pad=Math.max(12,canvas.width*.025);box={x:pad,y:canvas.height*.08,w:canvas.width-pad*2,h:canvas.height*.84};
+  }
+  const margin=Math.max(4,Math.min(box.w,box.h)*.035);
+  box.x=Math.max(0,box.x-margin);box.y=Math.max(0,box.y-margin);
+  box.w=Math.min(canvas.width-box.x,box.w+margin*2);box.h=Math.min(canvas.height-box.y,box.h+margin*2);
+  // A clean patch replaces the detected source text in its original area.
+  ctx.save();ctx.fillStyle='rgba(255,255,255,0.97)';ctx.fillRect(box.x,box.y,box.w,box.h);ctx.restore();
+  const translated=text.trim().replace(/\s+/g,' ');
+  const pad=Math.max(4,Math.min(box.w,box.h)*.055),innerX=box.x+pad,innerY=box.y+pad;
+  const maxTextW=Math.max(12,box.w-pad*2),maxTextH=Math.max(12,box.h-pad*2);
+  let fontSize=Math.max(8,Math.min(42,Math.round(Math.min(maxTextH*.42,box.w*.045))));
+  let lines=[],lineH=fontSize*1.25;
+  function wrapAt(size){
+    ctx.font=`500 ${size}px system-ui, Arial, sans-serif`;const out=[];
+    for(const paragraph of translated.split(/\n+/)){
+      let line='';for(const word of paragraph.split(/\s+/)){
+        const candidate=line?line+' '+word:word;
+        if(ctx.measureText(candidate).width>maxTextW&&line){out.push(line);line=word;}else line=candidate;
+      }if(line)out.push(line);
+    }return out.length?out:[translated];
+  }
+  lines=wrapAt(fontSize);lineH=fontSize*1.25;
+  while(fontSize>7&&(lines.length*lineH>maxTextH||Math.max(...lines.map(line=>{ctx.font=`500 ${fontSize}px system-ui, Arial, sans-serif`;return ctx.measureText(line).width;}))>maxTextW)){
+    fontSize--;lines=wrapAt(fontSize);lineH=fontSize*1.25;
+  }
+  ctx.fillStyle='#172033';ctx.font=`500 ${fontSize}px system-ui, Arial, sans-serif`;ctx.textBaseline='top';
+  const totalH=lines.length*lineH;let y=innerY+Math.max(0,(maxTextH-totalH)/2);
+  for(const line of lines){if(y+lineH>box.y+box.h)break;ctx.fillText(line,innerX,y,maxTextW);y+=lineH;}
+  canvas.classList.add('visible');$('imageResultActions').classList.add('visible');setImageOutputMode(true);
+}
+$('downloadTranslatedImage').onclick=()=>{const canvas=$('translatedImageCanvas');if(!canvas.classList.contains('visible'))return setStatus('Translate an image first.');const a=document.createElement('a');a.download='TranLang_Translated_Image.png';a.href=canvas.toDataURL('image/png');a.click();};
+$('showSourceImage').onclick=()=>{$('translatedImageCanvas').classList.remove('visible');$('imageResultActions').classList.remove('visible');setImageOutputMode(false);setStatus('Showing the original image. Translate again to show the translated version.');};
+async function scanImage(imageSource){
+ const file=(imageSource instanceof File)?imageSource:null;
+ if(file&&file.size>50*1024*1024){setStatus('This file is larger than 50 MB. Choose a smaller image.');return;}
+ if(file&&file.size===0){setStatus('The selected file is empty. Choose another image.');return;}
+ try{
+   setActiveImage(imageSource,file?file.name:'Camera photo');
+   setStatus('Loading multilingual OCR engine… first use requires internet.');
+   await ensureTesseract();
+   const langMap={en:'eng',hi:'hin',es:'spa',fr:'fra',de:'deu',it:'ita',pt:'por',ru:'rus',ar:'ara',bn:'ben',ta:'tam',te:'tel',ja:'jpn',zh:'chi_sim',ko:'kor'};
+   const selectedOcrLang=langMap[$('sourceLang').value]||'eng';
+   const lang=selectedOcrLang==='eng'?'eng':selectedOcrLang+'+eng';
+   let bitmap;
+   try{bitmap=await createImageBitmap(imageSource);}catch(e){
+     const url=URL.createObjectURL(imageSource);
+     try{bitmap=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Cannot decode this image format. Try JPG or PNG.'));im.src=url;});}finally{URL.revokeObjectURL(url);}
+   }
+   const w=bitmap.width||bitmap.naturalWidth,h=bitmap.height||bitmap.naturalHeight;
+   if(!w||!h)throw new Error('The browser could not read this image. Try JPG or PNG.');
+   // OCR works better on sufficiently large text. Limit huge images to avoid exhausting memory.
+   const scale=Math.min(2.5,Math.max(1,2600/Math.max(w,h)));
+   const base=document.createElement('canvas');base.width=Math.round(w*scale);base.height=Math.round(h*scale);
+   const bctx=base.getContext('2d',{willReadFrequently:true});bctx.drawImage(bitmap,0,0,base.width,base.height);bitmap.close?.();
+   // One OCR pass, with percentile contrast normalization and mild unsharp masking.
+   // This keeps colored backgrounds from dominating while retaining anti-aliased letter edges.
+   const sourceData=bctx.getImageData(0,0,base.width,base.height);
+   const gray=new Uint8ClampedArray(base.width*base.height),hist=new Uint32Array(256);
+   for(let i=0,pix=0;i<sourceData.data.length;i+=4,pix++){
+     const g=Math.round(.299*sourceData.data[i]+.587*sourceData.data[i+1]+.114*sourceData.data[i+2]);
+     gray[pix]=g;hist[g]++;
+   }
+   const total=gray.length;let low=0,high=255,acc=0;
+   for(let v=0;v<256;v++){acc+=hist[v];if(acc>=total*.02){low=v;break;}}
+   acc=0;for(let v=255;v>=0;v--){acc+=hist[v];if(acc>=total*.02){high=v;break;}}
+   if(high-low<40){low=Math.max(0,low-20);high=Math.min(255,high+20);}
+   const enhanced=document.createElement('canvas');enhanced.width=base.width;enhanced.height=base.height;
+   const ectx=enhanced.getContext('2d');const out=ectx.createImageData(base.width,base.height);
+   const contrast=new Uint8ClampedArray(gray.length);
+   for(let i=0;i<gray.length;i++)contrast[i]=Math.max(0,Math.min(255,Math.round((gray[i]-low)*255/Math.max(1,high-low))));
+   // Mild sharpening: center pixel emphasized, neighboring pixels soften sensor noise.
+   const W=base.width,H=base.height;
+   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+     const i=y*W+x,left=contrast[y*W+Math.max(0,x-1)],right=contrast[y*W+Math.min(W-1,x+1)],up=contrast[Math.max(0,y-1)*W+x],down=contrast[Math.min(H-1,y+1)*W+x];
+     const v=Math.max(0,Math.min(255,Math.round(1.55*contrast[i]-.1375*(left+right+up+down))));
+     const j=i*4;out.data[j]=out.data[j+1]=out.data[j+2]=v;out.data[j+3]=255;
+   }
+   ectx.putImageData(out,0,0);
+   setStatus('Recognizing text with one enhanced OCR pass… keep this page open.');
+   const result=await Tesseract.recognize(enhanced,lang,{
+     logger:m=>{if(m.status==='recognizing text')setStatus('OCR recognition: '+Math.round((m.progress||0)*100)+'%');}
+   },{tessedit_pageseg_mode:'3',preserve_interword_spaces:'1',user_defined_dpi:'300'});
+   const best=result;
+   const recognized=(best.data.text||'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+   const ocrLines=(best.data.lines||[]).filter(line=>line.text&&line.text.trim()&&line.bbox);
+   if(ocrLines.length){
+     const x1=Math.min(...ocrLines.map(line=>line.bbox.x0)),y1=Math.min(...ocrLines.map(line=>line.bbox.y0));
+     const x2=Math.max(...ocrLines.map(line=>line.bbox.x1)),y2=Math.max(...ocrLines.map(line=>line.bbox.y1));
+     activeOcrBounds={x:x1/base.width,y:y1/base.height,w:(x2-x1)/base.width,h:(y2-y1)/base.height};
+   }else activeOcrBounds=null;
+   if(!recognized)throw new Error('No readable text found. Select the correct source language and try a sharp, well-lit photo with the text in focus.');
+   $('input').value=recognized;$('count').textContent=recognized.length.toLocaleString()+' characters';
+   const confidence=Math.round(Number(best.data.confidence)||0);
+   $('sourceImageCaption').textContent=`${file?file.name:'Camera photo'} · OCR confidence ${confidence}%`;
+   setStatus(`Text detected (OCR confidence indicator: ${confidence}%; this is not a translation-accuracy score). One enhanced OCR pass completed. Check the recognized text in the input field and correct any misread words before translating; choose the exact source language and use a sharp, straight, well-lit photo for best results.`);
+ }catch(err){setStatus('Image scan failed: '+(err.message||err)+' Check internet access and the selected source language.');}
+ finally{$('photo').value='';}
+}
+$("photo").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(file)await scanImage(file);});
+$("quickPhoto").onclick=()=>{$("photo").click();};
+let cameraStream=null,capturedBlob=null;
+$("openCamera").onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia){setStatus("Camera API unavailable. Open this page on HTTPS or localhost in a modern browser.");return;}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("cameraVideo").srcObject=cameraStream;$("cameraBox").hidden=false;$("capturedPreview").hidden=true;capturedBlob=null;$("scanCapture").disabled=true;setStatus("Camera is ready. Point it at the text and capture a photo.");}catch(err){setStatus("Cannot access camera: "+err.message+". Allow camera permission and use HTTPS or localhost.");}};
+function stopCamera(){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}$("cameraVideo").srcObject=null;}
+$("closeCamera").onclick=()=>{stopCamera();$("cameraBox").hidden=true;};
+$("capturePhoto").onclick=()=>{const video=$("cameraVideo"),canvas=$("cameraCanvas");if(!video.videoWidth)return setStatus("Camera is not ready yet. Wait a moment and try again.");canvas.width=video.videoWidth;canvas.height=video.videoHeight;canvas.getContext("2d").drawImage(video,0,0);canvas.toBlob(blob=>{if(!blob)return setStatus("Could not capture image. Try again.");capturedBlob=blob;$("capturedPreview").src=URL.createObjectURL(blob);$("capturedPreview").hidden=false;$("scanCapture").disabled=false;setActiveImage(blob,"Camera photo captured");setStatus("Photo captured and previewed. Press Recognize captured photo to recognize the text.");},"image/jpeg",0.92);};
+$("scanCapture").onclick=async()=>{if(capturedBlob)await scanImage(capturedBlob);};
+updateNames();
+renderHistory();
+</script>
+</body>
+</html>
